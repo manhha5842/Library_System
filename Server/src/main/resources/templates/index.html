@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Coderthemes" name="author"/>
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+            <div class="content">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-light"
+                                                   id="dash-daterange">
+                                            <div class="input-group-append">
+                                                    <span class="input-group-text bg-primary border-primary text-white">
+                                                        <i class="mdi mdi-calendar-range font-13"></i>
+                                                    </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="javascript: void(0);" class="btn btn-primary ml-2">
+                                        <i class="mdi mdi-autorenew"></i>
+                                    </a>
+                                    <a href="javascript: void(0);" class="btn btn-primary ml-1">
+                                        <i class="mdi mdi-filter-variant"></i>
+                                    </a>
+                                </form>
+                            </div>
+                            <h4 class="page-title">Thống kê</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row">
+                    <div class="col-xl-5 col-lg-6">
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i class="mdi mdi-account-multiple widget-icon"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0" title="Number of Students">
+                                            Số luợng sinh viên đã mượn</h5>
+                                        <h3 class="mt-3 mb-3" th:text="${totalStudentsBorrowingBooksInMonth}">34</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success mr-2"
+                                                  th:if="${checkStudentBorrowingBooksChangePercentage}"><i
+                                                    class="mdi mdi-arrow-up-bold"></i>
+                                                    <span th:text="${studentBorrowingBooksChangePercentage}">
+                                                    </span> </span>
+                                            <span class="text-danger mr-2"
+                                                  th:if="${!checkStudentBorrowingBooksChangePercentage}"><i
+                                                    class="mdi mdi-arrow-down-bold"></i>
+                                                    <span th:text="${studentBorrowingBooksChangePercentage}">
+                                                    </span> </span>
+                                            <span class="text-nowrap">So với tháng trước</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div> <!-- end col-->
+
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i
+                                                    class="mdi mdi-cart-plus widget-icon bg-success-lighten text-success"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0"
+                                            title="Number of Borrow Orders">
+                                            Đơn mượn sách</h5>
+                                        <h3 class="mt-3 mb-3" th:text="${totalBorrowRecordsInMonth}">243</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="text-success mr-2"
+                                                  th:if="${checkBorrowRecordsChangePercentage}">
+                                                <i class="mdi mdi-arrow-up-bold"></i>
+                                                <span th:text="${borrowRecordsChangePercentage}">
+                                                </span>
+                                            </span>
+                                            <span class="text-danger mr-2"
+                                                  th:if="${!checkBorrowRecordsChangePercentage}">
+                                                <i class="mdi mdi-arrow-down-bold"></i>
+                                                <span th:text="${borrowRecordsChangePercentage}">
+                                                </span>
+                                            </span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div> <!-- end col-->
+                        </div> <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i
+                                                    class="mdi mdi-currency-usd widget-icon bg-success-lighten text-success"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0"
+                                            title="Number of Borrow Orders">
+                                            Số lượng sách đang được mượn</h5>
+                                        <h3 class="mt-3 mb-3" th:text="${totalBooksBorrowed}">543</h3>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div> <!-- end col-->
+
+                            <div class="col-lg-6">
+                                <div class="card widget-flat">
+                                    <div class="card-body">
+                                        <div class="float-right">
+                                            <i class="mdi mdi-pulse widget-icon"></i>
+                                        </div>
+                                        <h5 class="text-muted font-weight-normal mt-0"
+                                            title="Number of Borrow Orders">
+                                            Sách sinh viên chưa trả</h5>
+                                        <h3 class="mt-3 mb-3">143</h3>
+                                        <p class="mb-0 text-muted">
+                                                <span class="text-success mr-2"><i class="mdi mdi-arrow-down-bold"></i>
+                                                    1.08%</span><span class="text-nowrap">So với tháng trước</span>
+                                        </p>
+                                    </div> <!-- end card-body-->
+                                </div> <!-- end card-->
+                            </div> <!-- end col-->
+                        </div> <!-- end row -->
+
+                    </div> <!-- end col -->
+
+                    <div class="col-xl-7  col-lg-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="dropdown float-right">
+                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="mdi mdi-dots-vertical"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <!-- item-->
+                                        <a href="javascript:void(0);" class="dropdown-item">Xuất thống kê</a>
+                                    </div>
+                                </div>
+                                <h4 class="header-title mb-3">Thống kê theo tháng</h4>
+                                <div id="monthly-borrowing-statistics" class="apex-charts"></div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+
+
+                <div class="row">
+                    <div class="col-xl-6 col-lg-12 order-lg-2 order-xl-1">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title mt-2">Sách được mượn nhiều</h4>
+
+                                <div class="table-responsive">
+                                    <table class="table table-centered table-nowrap table-hover mb-0">
+                                        <tbody>
+                                        <tr th:each="bookMap : ${top10MostBorrowedBooks}">
+                                            <td>
+                                                <h5 style=" white-space: nowrap;        overflow: hidden;        text-overflow: ellipsis;        max-width: 200px;"
+                                                    class="font-14 my-1 font-weight-normal"
+                                                    th:text="${bookMap.key.title}"></h5>
+                                                <span class="text-muted font-13">
+                                                    <span th:each="author, iterStat : ${bookMap.key.authors}">
+                                                        <span th:text="${author.name}"/>
+                                                    </span>
+
+
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <h5 class="font-14 my-1 font-weight-normal" th:text="${bookMap.value}">
+                                                    5</h5>
+                                                <span class="text-muted font-13">Số lần mượn</span>
+                                            </td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div> <!-- end table-responsive-->
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+                    <div class="col-xl-6 col-lg-12 order-lg-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title">Thể loại được mượn nhiều</h4>
+                                <div id="book-category-borrowing-percentage" class="apex-charts"></div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+
+
+                </div>
+                <!-- end row -->
+
+
+            </div> <!-- End Content -->
+
+            <!-- Footer Start -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+            <!-- end Footer -->
+
+        </div> <!-- content-page -->
+
+    </div> <!-- end wrapper-->
+</div>
+<!-- END Container -->
+
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/apexcharts.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-jvectormap-1.2.2.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-jvectormap-world-mill-en.js}"></script>
+<!-- third party js ends -->
+
+<script th:inline="javascript">
+    /*
+    <
+    ![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function () {
+        // Dữ liệu thống kê hàng tháng
+        var monthlyStatistics = /*[[${monthlyBorrowingStatistics}]]*/ {};
+        var months = Object.keys(monthlyStatistics);
+        var counts = Object.values(monthlyStatistics);
+
+        // Biểu đồ thống kê hàng tháng
+        var options = {
+            chart: {
+                type: 'line',
+                height: 350
+            },
+            series: [{
+                name: 'Số lượt mượn',
+                data: counts
+            }],
+            xaxis: {
+                categories: months
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#monthly-borrowing-statistics"), options);
+        chart.render();
+
+        // Dữ liệu thể loại được mượn nhiều
+        var categoryData = /*[[${bookCategoryBorrowingPercentage}]]*/ {};
+        var categories = Object.keys(categoryData);
+        var percentages = Object.values(categoryData);
+
+        // Biểu đồ thể loại được mượn nhiều
+        var options2 = {
+            chart: {
+                type: 'donut',
+                height: 350
+            },
+            series: percentages,
+            labels: categories
+        };
+
+        var chart2 = new ApexCharts(document.querySelector("#book-category-borrowing-percentage"), options2);
+        chart2.render();
+    });
+    /*]]>*/
+</script>
+</body>
+
+</html>

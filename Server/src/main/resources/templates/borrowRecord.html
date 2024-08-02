@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/responsive.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/buttons.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/select.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+
+            <div class="content">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <!--                                            <div class="page-title-right">-->
+                            <!--                                                <ol class="breadcrumb m-0">-->
+                            <!--                                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>-->
+                            <!--                                                    <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>-->
+                            <!--                                                    <li class="breadcrumb-item active">OrdetoggleOtherReason Details</li>-->
+                            <!--                                                </ol>-->
+                            <!--                                            </div>-->
+                            <h4 class="page-title" th:text="'Đơn mượn sách ' + ${borrowRecord.id}"></h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thêm phần tử chứa borrowRecordId -->
+                <div id="borrowRecordId" th:data-borrow-record-id="${borrowRecord.id}" style="display:none;"></div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="header-title pt-2" th:text="'Đơn mượn sách ' + ${borrowRecord.id}"></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <h4 class="header-title mb-3">Thông tin sinh viên</h4>
+
+                                <h5 th:text="'Đơn mượn sách ' + ${borrowRecord.student.name}">Nguyễn Văn A</h5>
+
+                                <p class="mb-2">
+                                    <span class="font-weight-bold mr-2">Email:</span>
+                                    <span th:text="${borrowRecord.student.email}"></span>
+                                </p>
+                            </div> <!-- end col -->
+                            <div class="col-lg-4">
+                                <h4 class="header-title mb-3">Thời gian</h4>
+
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+                                        <tbody>
+                                        <tr>
+                                            <th>Ngày nhận đơn :</th>
+                                            <td th:text="${#dates.format(borrowRecord.createdAt, 'dd-MM-yyyy')}"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Thời gian nhận sách :</th>
+                                            <td th:text="${#dates.format(borrowRecord.borrowDate, 'dd-MM-yyyy')}"></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Thời hạn trả sách :</th>
+                                            <td th:text="${#dates.format(borrowRecord.dueDate, 'dd-MM-yyyy')}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- end table-responsive -->
+
+                            </div> <!-- end col -->
+                            <div class="col-lg-5">
+                                <div class="table-responsive">
+                                    <table class="table mb-0" id="tableBook">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên sách</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                        </thead>
+                                        <tr th:each="book : ${borrowRecord.books}">
+                                            <td th:text="${book.id}"></td>
+                                            <td th:text="${book.title}"></td>
+                                            <td>
+                                                <span
+                                                        th:each="returnRecord : ${borrowRecord.returnRecords}"
+                                                        th:if="${returnRecord.book.id == book.id}"
+                                                        th:text="${returnRecord.status.getDisplayName()}"></span>
+                                                <!-- Nếu không có thì hiển thị 'Chưa bàn giao' -->
+                                                <span th:if="${borrowRecord.returnRecords.size()==0}">
+                                                     Chưa bàn giao
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <!-- end table-responsive -->
+                            </div> <!-- end col -->
+                        </div> <!-- end row -->
+                    </div> <!-- end card-body -->
+                </div> <!-- end card -->
+
+                <!-- Trạng thái và hành động -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="header-title pt-2"> Trạng thái đơn mượn sách</h4>
+                                    </div>
+                                    <div class="card-body text-lg-center">
+                                        <h3 class="text-lg-center"
+                                            th:switch="${#strings.trim(#strings.toUpperCase(borrowRecord.status.name))}">
+                                    <span th:case="'PENDING'" class="badge badge-warning-lighten">
+                                        <i class="mdi mdi-timer-sand"></i>
+                                        <span th:text="${borrowRecord.status.displayName}"> </span>
+                                    </span>
+                                            <span th:case="'BORROWED'" class="badge badge-info-lighten">
+                                        <i class="mdi mdi-timer"></i>
+                                        <span th:text="${borrowRecord.status.displayName}"> </span>
+                                    </span>
+                                            <span th:case="'RETURN_PENDING'"
+                                                  class="badge badge-info-lighten">
+                                        <i class="mdi mdi-clipboard-check-multiple-outline"></i>
+                                        <span th:text="${borrowRecord.status.displayName}"></span>
+                                    </span>
+                                            <span th:case="'COMPLETED'"
+                                                  class="badge badge-success-lighten">
+                                        <i class="mdi mdi-clipboard-check-multiple-outline"></i>
+                                        <span th:text="${borrowRecord.status.displayName}"></span>
+                                    </span>
+                                            <span th:case="'OVERDUE'" class="badge badge-danger-lighten">
+                                        <i class="mdi mdi-timer-off"></i>
+                                        <span th:text="${borrowRecord.status.displayName}"></span>
+                                    </span>
+                                            <span th:case="'CANCELLED'" class="badge badge-secondary-lighten">
+                                        <i class="mdi mdi-file-cancel-outline"></i>
+                                        <span th:text="${borrowRecord.status.displayName}"></span>
+                                    </span>
+                                            <!-- Thêm một <span> default để kiểm tra giá trị -->
+                                            <span th:case="*">Giá trị không hợp lệ: <span
+                                                    th:text="${borrowRecord.status.name}"></span></span>
+                                        </h3>
+
+                                        <div class="text-center py-3">
+                                            <button type="button" class="btn btn-primary"
+                                                    th:if="${#strings.trim(#strings.toUpperCase(borrowRecord.status.name)) == 'PENDING'}"
+                                                    data-toggle="modal" data-target="#confirmModal">Bàn giao sách
+                                            </button>
+                                            <button type="button" class="btn btn-primary"
+                                                    th:if="${  isAnyBookNotReturnYet}"
+                                                    data-toggle="modal" data-target="#returnModal">Xử lý trả sách
+                                            </button>
+                                            <a class="btn btn-primary"
+                                               th:if="${#strings.trim(#strings.toUpperCase(borrowRecord.status.name)) == 'OVERDUE'}"
+                                               th:href="@{/fineRecords/{id}(id=${borrowRecord.id})}">
+                                                Xử lý phiếu phạt
+                                            </a>
+                                            <!--                                    <button type="button" class="btn btn-warning"-->
+                                            <!--                                            th:if="${#strings.trim(#strings.toUpperCase(borrowRecord.status.name)) == 'RETURN_PENDING'-->
+                                            <!--                                            || #strings.toUpperCase(borrowRecord.status.name) =='BORROWED'}">-->
+                                            <!--                                        Mất sách-->
+                                            <!--                                    </button>-->
+                                            <button type="button" class="btn btn-danger"
+                                                    th:if="${#strings.trim(#strings.toUpperCase(borrowRecord.status.name)) == 'PENDING'}"
+                                                    data-toggle="modal" data-target="#cancelModal">Huỷ đơn
+                                            </button>
+                                        </div>
+
+                                        <div id="confirmModal" class="modal fade" tabindex="-1" role="dialog"
+                                             aria-labelledby="primary-header-modalLabel">
+                                            <!-- Modal Content -->
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header modal-colored-header bg-primary">
+                                                        <h4 class="modal-title" id="primary-header-modalLabel">
+                                                            Xác nhận bàn giao sách</h4>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-hidden="true">×
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <h5>Xác nhận bàn giao sách cho sinh viên <span
+                                                                th:text="${borrowRecord.student.name}"/></h5>
+                                                        <div class="text-lg-left">
+                                                            <p>Bao gồm:</p>
+                                                            <p th:each="book : ${borrowRecord.books }">
+                                                                <span th:text="'-' + ${book.title}"></span> <br/>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-light"
+                                                                data-dismiss="modal">
+                                                            Đóng
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary"
+                                                                onclick="updateStatus('BORROWED')">Xác nhận
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="returnModal" class="modal fade" tabindex="-1" role="dialog"
+                                             aria-labelledby="returnModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header justify-content-center">
+                                                        <h4 class="modal-title text-lg-center" id="returnModalLabel">
+                                                            Xử lý trả sách
+                                                        </h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row p-2">
+                                                            <h5>Chọn sách cần thực hiện</h5>
+                                                            <div class="table-responsive">
+                                                                <table class="table mb-0" id="tableReturn">
+                                                                    <thead class="thead-light">
+                                                                    <tr>
+                                                                        <th style="width: 20px;">
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox"
+                                                                                       class="custom-control-input"
+                                                                                       id="selectAllBooks">
+                                                                                <label class="custom-control-label"
+                                                                                       for="selectAllBooks">&nbsp;</label>
+                                                                            </div>
+                                                                        </th>
+                                                                        <th class="text-center">ID</th>
+                                                                        <th>Tên sách</th>
+                                                                        <th class="text-center">Trạng thái</th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr th:each="returnRecord : ${borrowRecord.returnRecords}"
+                                                                        th:if="${returnRecord.status.name() == 'PENDING'}">
+                                                                        <td>
+                                                                            <div class="custom-control custom-checkbox">
+                                                                                <input type="checkbox"
+                                                                                       class="custom-control-input bookCheckbox"
+                                                                                       th:id="${'check'+returnRecord.book.id}"
+                                                                                       th:data-book-id="${returnRecord.book.id}">
+                                                                                <label class="custom-control-label"
+                                                                                       th:for="${'check'+returnRecord.book.id}">&nbsp;</label>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="vertical-align: middle;"
+                                                                            class="text-center"
+                                                                            th:text="${returnRecord.book.id}"></td>
+                                                                        <td style="vertical-align: middle;"
+                                                                            th:text="${returnRecord.book.title}"></td>
+                                                                        <td style="vertical-align: middle;"
+                                                                            class="text-center">
+                                                                            <div class="input-group">
+                                                                                <select class="custom-select bookCondition"
+                                                                                        th:data-book-id="${returnRecord.book.id}">
+                                                                                    <option th:each="condition : ${conditions}"
+                                                                                            th:value="${condition.name()}"
+                                                                                            th:text="${condition.getDisplayName()}"></option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-light"
+                                                                    data-dismiss="modal">
+                                                                Đóng
+                                                            </button>
+                                                            <button type="button" class="btn btn-primary"
+                                                                    onclick="handleSaveChanges()">Lưu thay đổi
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div><!-- /.modal-dialog -->
+                                            </div><!-- /.modal -->
+                                        </div>
+                                        <div id="cancelModal" class="modal fade" tabindex="-1" role="dialog"
+                                             aria-labelledby="cancel-header-modal-label">
+                                            <!-- Modal Content -->
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header modal-colored-header bg-primary">
+                                                        <h4 class="modal-title" id="cancel-header-modal-label">
+                                                            Xác nhận huỷ đơn mượn sách
+                                                        </h4>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-hidden="true">×
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form class="form-inline ">
+                                                            <div class="form-group  w-100  justify-content-between mb-2">
+                                                                <label for="cancelReason" class="mr-2">Chọn lí
+                                                                    do:</label>
+                                                                <select class="custom-select  w-75 " id="cancelReason"
+                                                                        onchange="toggleOtherReason(this)">
+                                                                    <option value="">Chọn lý do</option>
+                                                                    <option value="Sách không còn sẵn">Sách không còn
+                                                                        sẵn
+                                                                    </option>
+                                                                    <option value="Thư viện đóng cửa">Thư viện đóng cửa
+                                                                    </option>
+                                                                    <option value="Không còn nhu cầu mượn">Không còn nhu
+                                                                        cầu
+                                                                        mượn
+                                                                    </option>
+                                                                    <option value="Lý do khác">Lý do khác</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group    w-100  justify-content-between  mb-2"
+                                                                 id="otherReasonContainer"
+                                                                 style="display: none;">
+                                                                <label for="otherReason" class="mr-2">Lý do
+                                                                    khác:</label>
+                                                                <textarea class="form-control w-75" id="otherReason"
+                                                                          rows="5"></textarea>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-light"
+                                                                data-dismiss="modal">
+                                                            Đóng
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary"
+                                                                onclick="confirmCancellation()">Xác nhận
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div> <!-- end card-body -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" th:if="${#lists.size(borrowRecord.fineRecords)>0}">
+                            <div class="col">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="row">
+                                            <h4 class="header-title pt-2 col">Phiếu phạt</h4>
+                                            <a class="btn btn-primary"
+                                               th:href="@{/fineRecords/{id}(id=${borrowRecord.id})}">
+                                                Xử lý phiếu phạt
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-lg-center">
+                                        <div class="table-responsive">
+                                            <table class="table mb-0" id="tableFine">
+                                                <thead class="thead-light">
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Tên sách</th>
+                                                    <th>Lý do</th>
+                                                    <th>Số tiền phạt</th>
+                                                    <th>Ngày tạo</th>
+                                                    <th>Ngày hết hạn</th>
+                                                    <th>Trạng thái</th>
+                                                </tr>
+                                                </thead>
+                                                <tr th:each="fineRecord : ${borrowRecord.fineRecords}">
+                                                    <td th:text="${fineRecord.id}"></td>
+                                                    <td th:text="${fineRecord.book.title}"></td>
+                                                    <td th:text="${fineRecord.fineReason.displayName}"></td>
+                                                    <td th:text="${#numbers.formatDecimal(fineRecord.fineAmount, 1, 'COMMA', 3, 'POINT')  }"></td>
+                                                    <td th:text="${#dates.format(fineRecord.fineDate, 'dd-MM-yyyy')}"></td>
+                                                    <td th:text="${#dates.format(fineRecord.dueDate, 'dd-MM-yyyy')}"></td>
+                                                    <td th:text="${fineRecord.status.displayName}"></td>
+
+
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="header-title pt-2"> Lịch sử cập nhật</h4>
+                                <div class="table-responsive">
+                                    <table class="table mb-0" id="tableHistory">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th>Thời gian</th>
+                                            <th>Hoạt động</th>
+                                            <th>Người thực hiện</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="historyItem : ${borrowRecord.historyRecords}">
+                                            <td>
+                                                <span th:text="${#dates.format(historyItem.timestamp, 'dd/MM/yyyy')}"></span>
+                                                <br>
+                                                <small class="text-muted"
+                                                       th:text="${#dates.format(historyItem.timestamp, 'hh:mm a')}"></small>
+                                            </td>
+                                            <td th:text="${historyItem.activity}"></td>
+                                            <td th:text="${historyItem.performedBy}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- end table-responsive -->
+                            </div> <!-- end card-body -->
+                        </div> <!-- end card -->
+                    </div> <!-- end col -->
+                </div> <!-- end col -->
+
+            </div> <!-- end row -->
+        </div> <!-- End Content -->
+
+        <!-- Footer Start -->
+        <div th:replace="~{fragments/footer :: footer}"></div>
+        <!-- end Footer -->
+
+    </div> <!-- content-page -->
+</div> <!-- end wrapper-->
+</div> <!-- END Container -->
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/jquery.dataTables.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.bootstrap4.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.responsive.min.js}"></script>
+<script th:src="@{/assets/js/vendor/responsive.bootstrap4.min.js}"></script>
+<!-- third party js ends -->
+
+<!-- demo app -->
+<script>
+    $(document).ready(function () {
+        "use strict";
+
+        $("#tableBook").DataTable({
+            keys: !0,
+            searching: false,
+            paging: false,
+            lengthChange: false,
+            info: false
+        });
+        $("#tableHistory").DataTable({
+            keys: !0,
+            searching: false,
+            language: {
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ bản ghi mỗi trang",
+                info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoEmpty: "Không có bản ghi nào",
+                infoFiltered: "(lọc từ _MAX_ bản ghi)",
+                zeroRecords: "Không có bản ghi nào khớp",
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+            }
+        });
+        $("#tableFine").DataTable({
+            keys: !0,
+            searching: false,
+            language: {
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ bản ghi mỗi trang",
+                info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoEmpty: "Không có bản ghi nào",
+                infoFiltered: "(lọc từ _MAX_ bản ghi)",
+                zeroRecords: "Không có bản ghi nào khớp",
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+            }
+        });
+
+        $('#selectAllBooks').on('change', function () {
+            $('.bookCheckbox').prop('checked', $(this).prop('checked'));
+        });
+
+        // Cập nhật trả sách
+        function handleSaveChanges() {
+            const selectedBooks = [];
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $('.bookCheckbox:checked').each(function () {
+                const bookId = $(this).data('book-id');
+                const condition = $('.bookCondition[data-book-id="' + bookId + '"]').val();
+
+                selectedBooks.push({
+                    bookId: bookId,
+                    condition: condition
+                });
+            });
+
+            // Nếu không có sách nào được chọn, báo lỗi
+            if (selectedBooks.length === 0) {
+                alert('Không có sách nào được chọn!');
+                return;
+            }
+
+            const borrowRecordId = $('#borrowRecordId').data('borrow-record-id');
+
+            $.ajax({
+                url: '/borrowRecords/' + borrowRecordId + '/status',
+                type: 'PATCH',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    status: 'RETURN_PENDING',
+                    books: selectedBooks,
+                    cancelReason: ''
+                }),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                },
+                success: function () {
+                    alert('Cập nhật trạng thái thành công!');
+                    location.reload();
+                },
+                error: function () {
+                    alert('Cập nhật trạng thái thất bại!');
+                }
+            });
+        }
+
+        function toggleOtherReason(selectElement) {
+            const selectedReason = $(selectElement).val();
+            const otherReasonContainer = $('#otherReasonContainer');
+
+            if (selectedReason === 'Lý do khác') {
+                otherReasonContainer.show();
+            } else {
+                otherReasonContainer.hide();
+            }
+        }
+
+        function confirmCancellation() {
+            const selectedReason = $('#cancelReason').val();
+            let cancelReason = selectedReason;
+
+            if (selectedReason === 'Lý do khác') {
+                cancelReason = $('#otherReason').val();
+            }
+
+            updateStatus('CANCELLED', cancelReason);
+        }
+
+        function updateStatus(newStatus, cancelReason) {
+            const borrowRecordId = $('#borrowRecordId').data('borrow-record-id');
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            if (!isNaN(borrowRecordId)) {
+                $.ajax({
+                    url: '/borrowRecords/' + borrowRecordId + '/status',
+                    type: 'PATCH',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        status: newStatus,
+                        books: null,
+                        cancelReason: cancelReason || ''
+                    }),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+                    },
+                    success: function () {
+                        alert('Cập nhật trạng thái thành công!');
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Cập nhật trạng thái thất bại!');
+                    }
+                });
+            } else {
+                alert('ID không hợp lệ: ' + borrowRecordId);
+            }
+        }
+
+        // Gắn hàm handleSaveChanges và updateStatus vào window để có thể gọi khi bấm nút
+        window.handleSaveChanges = handleSaveChanges;
+        window.updateStatus = updateStatus;
+        window.confirmCancellation = confirmCancellation;
+        window.toggleOtherReason = toggleOtherReason;
+    });
+</script>
+</body>
+</html>

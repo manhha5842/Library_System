@@ -1,0 +1,78 @@
+<div class="left-side-menu left-side-menu-detached" th:fragment="left-bar">
+
+    <div class="leftbar-user" th:if="${userInfo != null}">
+        <a href="javascript: void(0);">
+            <img th:src="${userInfo.picture}" alt="user-image" height="42"
+                 class="rounded-circle shadow-sm">
+            <span class="leftbar-user-name" th:text="${userInfo.name}">Nguyễn Văn A</span>
+        </a>
+    </div>
+
+    <!--- Sidemenu -->
+    <ul class="metismenu side-nav">
+        <li class="side-nav-item">
+            <a th:href="@{/}" class="side-nav-link">
+                <i class="uil-home-alt"></i>
+                <span> Thống kê </span>
+            </a>
+        </li>
+        <li class="side-nav-item">
+            <a th:href="@{/borrowRecords}" class="side-nav-link">
+                <i class="uil-calender"></i>
+                <span>Yêu cầu mượn sách</span>
+            </a>
+        </li>
+        <li class="side-nav-item">
+            <a th:href="@{/fineRecords}" class="side-nav-link">
+                <i class=" uil-cancel"></i>
+                <span>Phiếu phạt</span>
+            </a>
+        </li>
+        <li class="side-nav-item">
+            <a href="javascript: void(0);" class="side-nav-link">
+                <i class="uil-store"></i>
+                <span> Quản lí sách</span>
+                <span class="menu-arrow"></span>
+            </a>
+            <ul class="side-nav-second-level" aria-expanded="false">
+                <li>
+                    <a th:href="@{/books}">Sách</a>
+                </li>
+                <li>
+                    <a th:href="@{/authors}">Tác giả</a>
+                </li>
+                <li>
+                    <a th:href="@{/categories}">Thể loại</a>
+                </li>
+                <li>
+                    <a th:href="@{/publishers}">Nhà xuất bản</a>
+                </li>
+            </ul>
+        </li>
+        <li class="side-nav-item">
+            <a th:href="@{/feedbacks}" class="side-nav-link">
+                <i class="uil-envelope"></i>
+                 <span class="badge badge-info badge-pill float-right" th:if="${newFeedback>0}" th:text="${newFeedback}"></span>
+                <span> Đơn góp ý </span>
+            </a>
+        </li>
+        <li class="side-nav-item">
+            <a th:href="@{/renewalRecords}" class="side-nav-link">
+                <i class="uil-envelope"></i>
+                <span class="badge badge-info badge-pill float-right" th:if="${newRenewalRecord>0}" th:text="${newRenewalRecord}"></span>
+                <span> Yêu cầu gia hạn </span>
+            </a>
+        </li>
+        <li class="side-nav-item">
+            <a th:href="@{/students}" class="side-nav-link">
+                <i class="dripicons-user-group"></i>
+                <span> Tài khoản sinh viên </span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- End Sidebar -->
+
+    <!-- Sidebar -left -->
+
+</div>

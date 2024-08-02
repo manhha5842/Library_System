@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Coderthemes" name="author"/>
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/responsive.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/buttons.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/select.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+            <div class="content">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <h4 class="page-title">Đơn mượn sách</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-lg-8">
+                                        <form class="form-inline">
+                                            <div class="form-group mx-sm-3 mb-2">
+                                                <label for="statusFilter" class="mr-2">Lọc theo trạng thái:</label>
+                                                <select class="custom-select" id="statusFilter">
+                                                    <option value="">Tất cả</option>
+                                                    <option value="Đang chờ xử lý">Đang chờ xử lý</option>
+                                                    <option value="Đã mượn">Đã mượn</option>
+                                                    <option value="Đang chờ trả">Đang chờ trả</option>
+                                                    <option value="Hoàn thành">Hoàn thành</option>
+                                                    <option value="Quá hạn">Quá hạn</option>
+                                                    <option value="Đã hủy">Đã hủy</option>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="text-lg-right">
+                                            <button type="button" class="btn btn-light mb-2">Xuất file</button>
+                                        </div>
+                                    </div><!-- end col-->
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-centered w-100 dt-responsive "
+                                           id="basic-datatable">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th class="text-center">Mã đơn</th>
+                                            <th class="text-center">Mã số sinh viên</th>
+                                            <th class="text-center">Ngày tạo</th>
+                                            <th class="text-center">Ngày mượn</th>
+                                            <th class="text-center">Trạng thái</th>
+                                            <th class="text-center">Hành động</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="borrowRecord : ${borrowRecordList }">
+                                            <td class="text-center" >
+                                                <a th:href="@{/borrowRecords/{id}(id=${borrowRecord.id})}"
+                                                   class="text-body font-weight-bold"
+                                                   th:text="${borrowRecord.id}"> </a>
+                                            </td>
+                                            <td th:text="${borrowRecord.student.id}" class="text-center"/>
+                                            <td th:text="${#dates.format(borrowRecord.createdAt, 'dd-MM-yyyy')}"
+                                                class="text-center"/>
+                                            <td th:text="${#dates.format(borrowRecord.borrowDate, 'dd-MM-yyyy')}"
+                                                class="text-center"></td>
+                                            <td class="text-center">
+                                                <h5 th:switch="${#strings.trim(#strings.toUpperCase(borrowRecord.status.name))}">
+                                                    <span th:case="'PENDING'" class="badge badge-warning-lighten">
+                                                        <i class="mdi mdi-timer-sand"></i>
+                                                        <span th:text="${borrowRecord.status.displayName}">Đang xử lý </span>
+                                                    </span>
+                                                    <span th:case="'BORROWED'" class="badge badge-info-lighten">
+                                                        <i class="mdi mdi-timer"></i>
+                                                        <span th:text="${borrowRecord.status.displayName}">Đã mượn</span>
+                                                    </span>
+                                                    <span th:case="'RETURN_PENDING'"
+                                                          class="badge badge-info-lighten">
+                                                           <i class="mdi mdi-clipboard-check-multiple-outline"></i>
+                                                        <span th:text="${borrowRecord.status.displayName}">Đang chờ trả</span>
+                                                    </span>
+                                                    <span th:case="'COMPLETED'"
+                                                          class="badge badge-success-lighten">
+                                                            <i class="mdi mdi-clipboard-check-multiple-outline"></i>   <span
+                                                            th:text="${borrowRecord.status.displayName}">Hoàn thành</span>
+                                                    </span>
+                                                    <span th:case="'OVERDUE'"
+                                                          class="badge badge-danger-lighten">
+                                                            <i class="mdi mdi-timer-off"></i>
+                                                            th:text="${borrowRecord.status.displayName}"> Quá hạn</span>
+                                                    </span>
+                                                    <span th:case="'CANCELLED'"
+                                                          class="badge badge-secondary-lighten">
+                                                            <i class="mdi mdi-file-cancel-outline"></i>
+                                                            <span th:text="${borrowRecord.status.displayName}">Đã huỷ</span>
+                                                    </span>
+                                                    <span th:case="*">Giá trị không hợp lệ:
+                                                        <p th:text="${borrowRecord.status}"></p>
+                                                    </span>
+                                                </h5>
+                                            </td>
+                                            <td class="text-center">
+                                                <a th:href="@{/borrowRecords/{id}(id=${borrowRecord.id})}"
+                                                   class="action-icon"> <i
+                                                        class="mdi mdi-square-edit-outline"></i></a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+
+            </div> <!-- End Content -->
+
+            <!-- Footer Start -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+            <!-- end Footer -->
+
+        </div><!-- content-page -->
+
+    </div> <!-- end wrapper-->
+</div>
+<!-- END Container -->
+
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/jquery.dataTables.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.bootstrap4.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.responsive.min.js}"></script>
+<script th:src="@{/assets/js/vendor/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.checkboxes.min.js}"></script>
+<!-- third party js ends -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<!-- demo app -->
+<script th:inline="javascript">
+
+    $(document).ready(function () {
+        $.fn.dataTable.ext.type.order['number-with-hash-pre'] = function (data) {
+            return parseInt(data.replace(/#/g, ""), 10);
+        };
+
+        $.fn.dataTable.moment = function (format, locale) {
+            var types = $.fn.dataTable.ext.type;
+
+            types.detect.unshift(function (d) {
+                if (d) {
+                    // Null and empty values are acceptable
+                    return moment(d, format, locale, true).isValid() ? 'moment-' + format : null;
+                }
+                return null;
+            });
+
+            // Add sorting method
+            types.order['moment-' + format + '-pre'] = function (d) {
+                return d ? moment(d, format, locale, true).unix() : 0;
+            };
+        };
+
+        // Apply the moment date type for your specific format
+        $.fn.dataTable.moment('DD-MM-YYYY');
+
+        var table = $("#basic-datatable").DataTable({
+            keys: true,
+            order : ['0','desc'],
+            columnDefs: [
+                {
+                    targets: 0,
+                    width: '10%'
+                },
+                {
+                    targets: 1,
+                    width: '10%'
+                },
+                {
+                    targets: [2,3],
+                    type: 'moment-DD-MM-YYYY'
+                },
+                {
+                    targets: 4,
+                    visible: true
+                }
+            ],
+            language: {
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ bản ghi mỗi trang",
+                info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoEmpty: "Không có bản ghi nào",
+                infoFiltered: "(lọc từ _MAX_ bản ghi)",
+                zeroRecords: "Không có bản ghi nào khớp",
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+            }
+        });
+
+        // Thêm sự kiện thay đổi trạng thái của dropdown lọc
+        $('#statusFilter').on('change', function () {
+            var selectedValue = $(this).val();
+            console.log("Selected Status:", selectedValue);
+
+            // In ra giá trị trong cột trạng thái để kiểm chứng
+            table.column(4).nodes().each(function (node, index, dtSettings) {
+                console.log("Row", index, "Status:", $(node).text().trim());
+            });
+
+            table.column(4).search(selectedValue ? selectedValue : '', true, false).draw();
+        });
+    });
+</script>
+
+</body>
+</html>

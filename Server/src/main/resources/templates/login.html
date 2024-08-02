@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Coderthemes" name="author"/>
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="authentication-bg pb-0" data-layout-config='{"darkMode":false}'>
+
+<div class="auth-fluid">
+    <!--Auth fluid left content -->
+    <div class="auth-fluid-form-box">
+        <div class="align-items-center d-flex h-100">
+            <div class="card-body">
+
+                <!-- Logo -->
+                <div class="pb-3 text-center text-lg-center">
+                    <a th:href="@{/}" class="logo-dark">
+                        <span><img th:src="@{/assets/images/logo-dark.png}" alt="" height="90"></span>
+                    </a>
+                    <a th:href="@{/}" class="logo-light">
+                        <span><img th:src="@{/assets/images/logo-.png}" alt="" height="90"></span>
+                    </a>
+                </div>
+
+                <!-- title-->
+                <h4 class=" text-center mt-0">Đăng nhập</h4>
+                <p class=" text-center text-muted mb-4">Dùng email của tổ chức để đăng nhập với vai trò của bạn.</p>
+
+                <!-- form -->
+                <form action="#">
+                    <!-- social-->
+                    <div class="text-center mt-4">
+                        <!--                        <p class="text-muted font-16">Sign in with</p>-->
+                        <ul class="social-list list-inline mt-3">
+                            <li class="list-inline-item">
+                                <a th:href="@{/oauth2/authorization/google}"
+                                   class="social-list-item border-danger text-danger"><i
+                                        class="mdi mdi-google"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+                <!-- end form-->
+
+                <!-- Footer-->
+                <footer class="footer footer-alt">
+                </footer>
+
+            </div> <!-- end .card-body -->
+        </div> <!-- end .align-items-center.d-flex.h-100-->
+    </div>
+    <!-- end auth-fluid-form-box-->
+
+    <!-- Auth fluid right content -->
+    <div class="auth-fluid-right text-center">
+        <div class="auth-user-testimonial">
+            <h2 class="mb-3">Trải nghiệm quản lý thư viện thông minh</h2>
+            <p class="lead"><i class="mdi mdi-format-quote-open"></i> Đơn giản hóa quy trình quản lý, tăng năng suất và
+                hiệu quả hoạt động của thư viện. <i class="mdi mdi-format-quote-close"></i>
+            </p>
+            <p>
+                - Hệ thống quản lý thư viện hiện đại
+            </p>
+        </div> <!-- end auth-user-testimonial-->
+    </div>
+    <!-- end Auth fluid right content -->
+</div>
+<!-- end auth-fluid-->
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+<script th:if="${error !=null}">
+
+    $.NotificationApp.send("Sai thông tin đăng nhập", "Email không đúng", "top-right", "rgba(0,0,0,0.2)", "dripicons-warning")
+</script>
+</body>
+
+</html>

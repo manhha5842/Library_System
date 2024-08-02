@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "LibraryApplication",
+    "slug": "LibraryApplication",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./app/assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./app/assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./app/assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.manhha5842.LibraryApplication",
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "favicon": "./app/assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./app/assets/fonts/Lexend_100Thin.ttf",
+            "./app/assets/fonts/Lexend_200ExtraLight.ttf",
+            "./app/assets/fonts/Lexend_300Light.ttf",
+            "./app/assets/fonts/Lexend_400Regular.ttf",
+            "./app/assets/fonts/Lexend_500Medium.ttf",
+            "./app/assets/fonts/Lexend_600SemiBold.ttf",
+            "./app/assets/fonts/Lexend_700Bold.ttf",
+            "./app/assets/fonts/Lexend_800ExtraBold.ttf",
+            "./app/assets/fonts/Lexend_900Black.ttf"
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "173f5675-0ae9-413a-988c-fc7f7833f957"
+      }
+    }
+  }
+}

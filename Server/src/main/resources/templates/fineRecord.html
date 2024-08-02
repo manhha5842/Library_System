@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/responsive.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/buttons.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/select.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+
+            <div class="content">
+
+                <!--                 start page title-->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <!--                                            <div class="page-title-right">-->
+                            <!--                                                <ol class="breadcrumb m-0">-->
+                            <!--                                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>-->
+                            <!--                                                    <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>-->
+                            <!--                                                    <li class="breadcrumb-item active">OrdetoggleOtherReason Details</li>-->
+                            <!--                                                </ol>-->
+                            <!--                                            </div>-->
+                            <h4 class="page-title" th:text="'Đơn mượn sách ' + ${borrowRecord.id}"></h4>
+                        </div>
+                    </div>
+                </div>
+                <!--                 end page title-->
+
+                <!-- Thêm phần tử chứa borrowRecordId -->
+                <div id="borrowRecordId" th:data-borrow-record-id="${borrowRecord.id}" style="display:none;"></div>
+
+                <div class="row">
+                    <div class="col-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+
+                                    <h4 class="header-title pt-2 col">Phiếu phạt</h4>
+                                    <a class="btn btn-primary"
+                                       th:href="@{/borrowRecords/{id}(id=${borrowRecord.id})}">
+                                        Xem đơn mượn sách
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body text-lg-center">
+                                <div class="table-responsive">
+                                    <table class="table mb-0" id="tableFine">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên sách</th>
+                                            <th>Lý do</th>
+                                            <th>Số tiền phạt</th>
+                                            <th>Ngày tạo</th>
+                                            <th>Ngày hết hạn</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                        </thead>
+                                        <tr th:each="fineRecord : ${borrowRecord.fineRecords}">
+                                            <td th:text="${fineRecord.id}"></td>
+                                            <td th:text="${fineRecord.book.title}"></td>
+                                            <td th:text="${fineRecord.fineReason.displayName}"></td>
+                                            <td th:text="${#numbers.formatDecimal(fineRecord.fineAmount, 1, 'COMMA', 3, 'POINT') }"></td>
+                                            <td th:text="${#dates.format(fineRecord.fineDate, 'dd-MM-yyyy')}"></td>
+                                            <td th:text="${#dates.format(fineRecord.dueDate, 'dd-MM-yyyy')}"></td>
+                                            <td th:text="${fineRecord.status.displayName}"></td>
+
+
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 ">
+                        <div class="border p-3 mt-4 mt-lg-0 rounded bg-white">
+                            <h4 class="header-title mb-3">Thanh toán</h4>
+
+                            <div class="table-responsive">
+                                <table class="table table-centered mb-0">
+                                    <tbody>
+                                    <tr th:each="group : ${fineRecordGroups}">
+                                        <td>
+                                            <p class="m-0 d-inline-block align-middle">
+                                                <span th:text="${group.fineReasonDisplayName}"></span>
+                                                <br>
+                                                <small th:text="${group.count} + 'x'"></small>
+                                            </p>
+                                        </td>
+                                        <td class="text-right" th:text="${#numbers.formatDecimal(group.fineAmount * group.count, 1, 'COMMA', 3, 'POINT')}"></td>
+                                    </tr>
+
+                                    <tr class="text-right">
+                                        <td>
+                                            <h5 class="m-0">Tổng cộng:</h5>
+                                        </td>
+                                        <td class="text-right"
+                                            th:text="${#numbers.formatDecimal(totalFineAmount, 1, 'COMMA', 3, 'POINT') }">
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <button type="button" class="btn btn-primary"
+                                    data-toggle="modal" data-target="#checkOutModal" th:if="${!isPaid}" > Thanh toán
+                            </button>
+                            <div class="badge-success-lighten align-content-center text-center" style="height: 30px;"  th:if="${isPaid}" >
+                                    Đã thanh toán
+                            </div>
+                            <div id="checkOutModal" class="modal fade" tabindex="-1" role="dialog"
+                                 aria-labelledby="primary-header-modalLabel">
+                                <!-- Modal Content -->
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header modal-colored-header bg-primary">
+                                            <h4 class="modal-title" id="primary-header-modalLabel">Xác nhận thanh toán</h4>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-hidden="true">×
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table table-centered mb-0">
+                                                <tbody>
+                                                <tr th:each="group : ${fineRecordGroups}">
+                                                    <td>
+                                                        <p class="m-0 d-inline-block align-middle">
+                                                            <span th:text="${group.fineReasonDisplayName}"></span>
+                                                            <br>
+                                                            <small th:text="${group.count} + 'x'"></small>
+                                                        </p>
+                                                    </td>
+                                                    <td class="text-right" th:text="${#numbers.formatDecimal(group.fineAmount * group.count, 1, 'COMMA', 3, 'POINT')}"></td>
+                                                </tr>
+
+                                                <tr class="text-right">
+                                                    <td>
+                                                        <h5 class="m-0">Tổng cộng:</h5>
+                                                    </td>
+                                                    <td class="text-right"
+                                                        th:text="${#numbers.formatDecimal(totalFineAmount, 1, 'COMMA', 3, 'POINT') }">
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                            <h6>Xác nhận thanh toán </h6>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-light button-close"
+                                                    data-dismiss="modal">
+                                                Đóng
+                                            </button>
+                                            <button type="button" class="btn btn-primary button-confirm"
+                                                    onclick="updateStatus('PAID')">Xác nhận
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div> <!-- end row -->
+        </div> <!-- End Content -->
+
+        <!-- Footer Start -->
+        <div th:replace="~{fragments/footer :: footer}"></div>
+        <!-- end Footer -->
+
+    </div> <!-- content-page -->
+</div> <!-- end wrapper-->
+</div> <!-- END Container -->
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/jquery.dataTables.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.bootstrap4.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.responsive.min.js}"></script>
+<script th:src="@{/assets/js/vendor/responsive.bootstrap4.min.js}"></script>
+<!-- third party js ends -->
+
+<!-- demo app -->
+<script>
+    $(document).ready(function () {
+        "use strict";
+
+        $("#tableBook").DataTable({
+            keys: !0,
+            searching: false,
+            paging: false,
+            lengthChange: false,
+            info: false
+        });
+        $("#tableHistory").DataTable({
+            keys: !0,
+            searching: false,
+            language: {
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ bản ghi mỗi trang",
+                info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoEmpty: "Không có bản ghi nào",
+                infoFiltered: "(lọc từ _MAX_ bản ghi)",
+                zeroRecords: "Không có bản ghi nào khớp",
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+            }
+        });
+        $("#tableFine").DataTable({
+            keys: !0,
+            searching: false,
+            language: {
+                search: "Tìm kiếm:",
+                lengthMenu: "Hiển thị _MENU_ bản ghi mỗi trang",
+                info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ bản ghi",
+                infoEmpty: "Không có bản ghi nào",
+                infoFiltered: "(lọc từ _MAX_ bản ghi)",
+                zeroRecords: "Không có bản ghi nào khớp",
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+            }
+        });
+
+        $('#selectAllBooks').on('change', function () {
+            $('.bookCheckbox').prop('checked', $(this).prop('checked'));
+        });
+
+        // Cập nhật trả sách
+        function handleSaveChanges() {
+            const selectedBooks = [];
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            $('.bookCheckbox:checked').each(function () {
+                const bookId = $(this).data('book-id');
+                const condition = $('.bookCondition[data-book-id="' + bookId + '"]').val();
+
+                selectedBooks.push({
+                    bookId: bookId,
+                    condition: condition
+                });
+            });
+
+            // Nếu không có sách nào được chọn, báo lỗi
+            if (selectedBooks.length === 0) {
+                alert('Không có sách nào được chọn!');
+                return;
+            }
+
+            const borrowRecordId = $('#borrowRecordId').data('borrow-record-id');
+
+            $.ajax({
+                url: '/borrowRecords/' + borrowRecordId + '/status',
+                type: 'PATCH',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    status: 'RETURN_PENDING',
+                    books: selectedBooks,
+                    cancelReason: ''
+                }),
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                },
+                success: function () {
+                    alert('Cập nhật trạng thái thành công!');
+                    location.reload();
+                },
+                error: function () {
+                    alert('Cập nhật trạng thái thất bại!');
+                }
+            });
+        }
+
+        function toggleOtherReason(selectElement) {
+            const selectedReason = $(selectElement).val();
+            const otherReasonContainer = $('#otherReasonContainer');
+
+            if (selectedReason === 'Lý do khác') {
+                otherReasonContainer.show();
+            } else {
+                otherReasonContainer.hide();
+            }
+        }
+
+        function confirmCancellation() {
+            const selectedReason = $('#cancelReason').val();
+            let cancelReason = selectedReason;
+
+            if (selectedReason === 'Lý do khác') {
+                cancelReason = $('#otherReason').val();
+            }
+
+            updateStatus('CANCELLED', cancelReason);
+        }
+
+        function updateStatus(newStatus) {
+            const borrowRecordId = $('#borrowRecordId').data('borrow-record-id');
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            if (!isNaN(borrowRecordId)) {
+                $.ajax({
+                    url: '/fineRecords/' + borrowRecordId + '/status',
+                    type: 'PATCH',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        status: newStatus,
+                    }),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader(csrfHeader, csrfToken);
+                        $(".button-confirm").html('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+                    },
+                    success: function () {
+                        $.NotificationApp.send("Cập nhật thành công", "Trạng thái đã được cập nhật", "top-right", "#5ba035", "success");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2000);
+                    },
+                    error: function () {
+                        $(".button-confirm").html('Cập nhật');
+                        $.NotificationApp.send("Lỗi", "Có lỗi xảy ra khi cập nhật", "top-right", "#bf441d", "error");
+                    }
+                });
+            } else {
+                alert('ID không hợp lệ: ' + borrowRecordId);
+            }
+        }
+
+        // Gắn hàm handleSaveChanges và updateStatus vào window để có thể gọi khi bấm nút
+        window.handleSaveChanges = handleSaveChanges;
+        window.updateStatus = updateStatus;
+        window.confirmCancellation = confirmCancellation;
+        window.toggleOtherReason = toggleOtherReason;
+    });
+</script>
+</body>
+</html>

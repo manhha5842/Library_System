@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/responsive.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/buttons.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/select.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+            <div class="content">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <h4 class="page-title">Tác giả</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <table id="basic-datatable"
+                                       class="table dt-responsive nowrap w-100 dataTable no-footer dtr-inline">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th class="all">
+                                            ID
+                                        </th>
+                                        <th class="all">Tên nhà xuất bản</th>
+                                        <th>Số lượng tác phẩm</th>
+                                        <th class=" text-center">Hành động</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="publisher : ${publisherList}">
+                                        <td>
+                                            <a th:href="@{/publishers/{id}(id=${publisher.id})}"
+                                               class="text-body" th:text="${publisher.id}"></a>
+                                            <br/>
+                                        </td>
+                                        <td>
+                                            <p class="m-0 d-inline-block align-middle font-16">
+                                                <a th:href="@{/publishers/{id}(id=${publisher.id})}"
+                                                   class="text-body" th:text="${publisher.name}"></a>
+                                                <br/>
+                                            </p>
+                                        <td th:text="${publisher.books != null} ? ${#lists.size(publisher.books)} : 0"></td>
+
+                                        <td class="table-action text-center">
+
+                                            <a th:href="@{/publishers/{id}(id=${publisher.id})}" class="action-icon"> <i
+                                                    class="mdi mdi-eye"></i></a>
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col -->
+                </div>
+                <!-- end row -->
+
+            </div> <!-- End Content -->
+
+            <!-- Footer Start -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+            <!-- end Footer -->
+
+        </div> <!-- content-page -->
+
+    </div> <!-- end wrapper-->
+</div>
+<!-- END Container -->
+
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/jquery.dataTables.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.bootstrap4.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.responsive.min.js}"></script>
+<script th:src="@{/assets/js/vendor/responsive.bootstrap4.min.js}"></script>
+<!-- third party js ends -->
+
+<!-- demo app -->
+<script>
+    $(document).ready(function () {
+        "use strict";
+        $("#basic-datatable").DataTable({
+            keys: !0,
+            language: {
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+            }
+        });
+
+    });
+</script>
+<!-- end demo js-->
+</body>
+
+</html>

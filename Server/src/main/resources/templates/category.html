@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/responsive.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/buttons.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/select.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+
+            <div class="content">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <h4 class="page-title" th:text="${category.name}">Thông tin thể loại</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- Profile -->
+                        <div class="card bg-primary">
+                            <div class="card-body profile-user-box">
+
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <h4 class="mt-1 mb-1 text-white" id="category-name-display"
+                                                    th:text="${category.name}"></h4>
+
+                                                <ul class=" mb-0 list-inline text-light">
+                                                    <li class="list-inline-item mr-3">
+                                                        <h5 class="mb-1"><i class="mdi mdi-book-open-variant"></i>
+                                                            <span th:text="${category.books != null} ? ${#lists.size(category.books)} : 0"></span>
+                                                        </h5>
+                                                        <p class="mb-0 font-13 text-white-50">Số lượng sách</p>
+                                                    </li>
+
+                                                </ul>
+                                            </div> <!-- end media-body-->
+                                        </div>
+                                    </div> <!-- end col-->
+
+                                    <div class="col-sm-4">
+                                        <div class="text-center mt-sm-0 mt-3 text-sm-right">
+                                            <button type="button" class="btn btn-light" data-toggle="modal"
+                                                    data-target="#edit-modal">
+                                                <i class="mdi mdi-account-edit mr-1"></i> Chỉnh sửa thông tin
+                                            </button>
+                                            <!-- Modal -->
+                                            <div id="edit-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <div class="modal-body">
+                                                            <h1 class="text-center">Cập nhật thông tin</h1>
+                                                            <form id="updateCategoryForm" class="pl-3 pr-3">
+                                                                <div class="form-group">
+                                                                    <input type="hidden" id="categoryId" name="id"
+                                                                           th:value="${category.id}">
+                                                                    <input type="hidden"
+                                                                           name="_csrf"
+                                                                           th:value="${_csrf.token}"/>
+                                                                    <label for="category-name"
+                                                                           class="float-left">Tên</label>
+                                                                    <input class="form-control" type="text"
+                                                                           id="category-name" name="name" required=""
+                                                                           th:placeholder="${category.name}">
+                                                                </div>
+                                                                <div class="form-group text-center">
+                                                                    <button id="edit-submit-button"
+                                                                            style="width: 100px;"
+                                                                            class="btn btn-rounded btn-primary"
+                                                                            type="submit">Cập nhật
+                                                                    </button>
+                                                                    <button id="close-modal" type="button"
+                                                                            style="width: 100px;"
+                                                                            class="btn btn-rounded btn-light"
+                                                                            data-dismiss="modal">Huỷ
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div><!-- /.modal-content -->
+                                                </div><!-- /.modal-dialog -->
+                                            </div><!-- /.modal -->
+                                        </div>
+                                    </div> <!-- end col-->
+                                </div> <!-- end row -->
+
+                            </div> <!-- end card-body/ profile-user-box-->
+                        </div><!--end profile/ card -->
+                    </div> <!-- end col-->
+                </div>
+                <!-- end row -->
+
+
+                <div class="row">
+                    <div class="card col">
+                        <div class="card-body">
+                            <h4 class="header-title mb-3">Sách</h4>
+
+                            <div class="table-responsive">
+                                <table id="basic-datatable" class="table table-hover dataTable table-centered mb-0">
+                                    <thead>
+                                    <tr>
+
+                                        <th class="all text-center">
+                                            ID
+                                        </th>
+                                        <th class="all">Tiêu đề</th>
+                                        <th>Thể loại</th>
+                                        <th class="text-center">Ngôn ngữ</th>
+                                        <th class="text-center">Số lượng</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="book : ${category.books}">
+                                        <td class="bold text-center">
+                                            <a th:href="@{/books/{id}(id=${book.id})}"
+                                               class="text-body" th:text="${book.id}"></a>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/books/{id}(id=${book.id})}"
+                                               class="text-body" th:text="${book.title}"></a>
+                                        </td>
+                                        <td>
+                                                 <span th:each="category, iterStat : ${book.categories}">
+                                                <a th:href="@{/categories/{id}(id=${category.id})}"
+                                                   class="badge badge-outline-secondary" th:text="${category.name}">Secondary</a>
+                                                     <!--                                                    <hr th:unless="${iterStat.last}"/>-->
+                                                </span>
+                                        </td>
+                                        <td th:text="${book.language}" class="text-center"></td>
+                                        <td th:text="${#lists.size(book.copies)}" class="text-center"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div> <!-- end table responsive-->
+                        </div> <!-- end col-->
+                    </div> <!-- end row-->
+
+                </div>
+                <!-- end row -->
+
+            </div> <!-- End Content -->
+
+            <!-- Footer Start -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+            <!-- end Footer -->
+
+        </div> <!-- content-page -->
+
+    </div> <!-- end wrapper-->
+</div>
+<!-- END Container -->
+
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/jquery.dataTables.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.bootstrap4.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.responsive.min.js}"></script>
+<script th:src="@{/assets/js/vendor/responsive.bootstrap4.min.js}"></script>
+<!-- third party js ends -->
+
+<!-- demo app -->
+<script>
+    $(document).ready(function () {
+        // Lấy CSRF token và header từ meta tags
+        var csrfToken = $("meta[name='_csrf']").attr("content");
+        var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        "use strict";
+        $("#basic-datatable").DataTable({
+            keys: !0,
+            language: {
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+            }
+        });
+        $("#updateCategoryForm").on('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                type: "POST",
+                url: "/categories/update",
+                data: formData,
+                processData: false, // Không xử lý dữ liệu FormData
+                contentType: false, // Không đặt header Content-Type tự động
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                    // Hiển thị spinner loading
+                    $("#edit-submit-button").html('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+                },
+                success: function (response) {
+                    // Ẩn spinner và hiển thị thông báo thành công
+                    $("#edit-submit-button").html('Cập nhật');
+                    $("#category-name-display").text(response.name);
+                    $("#close-modal").click(function () {
+                    });
+                    $.NotificationApp.send("Cập nhật thành công", response.name, "top-right", "#5ba035", "success");
+                },
+                error: function (response) {
+                    // Ẩn spinner và hiển thị thông báo lỗi
+                    $("#edit-submit-button").html('Cập nhật');
+                    $.NotificationApp.send("Lỗi", "Có lỗi xảy ra khi cập nhật", "top-right", "#bf441d", "error");
+                }
+            });
+        });
+    });
+</script>
+<!-- end demo js-->
+</body>
+
+</html>

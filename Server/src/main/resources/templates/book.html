@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/responsive.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/buttons.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/select.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+
+            <div class="content">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item active">Thông tin sách</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Thông tin sách</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-5">
+                                        <!-- Product image -->
+                                        <a href="javascript: void(0);" class="text-center d-block mb-4">
+                                            <img th:src="${book.image}"
+                                                 class="img-fluid" style="max-width: 280px;" alt="Product-img"/>
+                                        </a>
+                                    </div> <!-- end col -->
+                                    <div class="col-lg-7">
+                                        <form class="pl-lg-4">
+                                            <!-- Product title -->
+                                            <h3 class="mt-0">
+                                                <span th:text="${book.title}">Default Title</span>
+                                                <a href="javascript:void(0);" class="text-muted">
+                                                    <i class="mdi mdi-square-edit-outline ml-2"></i>
+                                                </a>
+                                            </h3>
+                                            <p class="mb-1"> Tác giả:
+                                                <span th:each="author : ${book.authors}">
+                                                <a th:href="@{/authors/{id}(id=${author.id})}" th:text="${author.name} + ', '">Secondary</a>
+                                                    <!--                                                    <hr th:unless="${iterStat.last}"/>-->
+                                                </span>
+                                            </p>
+
+                                            <!-- Product information -->
+                                            <div class="mt-4">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <h6 class="font-14">Số lượng sách:</h6>
+                                                        <h3 th:text="${#lists.size(book.copies)}">1</h3>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <h6 class="font-14">Số lượt mượn:</h6>
+                                                        <h3 th:text="${#lists.size(book.borrowRecords)}">0</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Product description -->
+                                            <div class="row">
+                                                <div class="col-md-4" th:if="${availableCopies.size()>0}">
+                                                    <h6 class="font-14">Sách sẵn có:</h6>
+                                                    <p class="text-sm lh-150" th:text="${availableCopies.size()}">1</p>
+                                                </div>
+                                                <div class="col-md-4" th:if="${offlineCopies.size()>0}">
+                                                    <h6 class="font-14">Sách chỉ đọc tại thư viện:</h6>
+                                                    <p class="text-sm lh-150" th:text="${offlineCopies.size()}">1</p>
+                                                </div>
+                                                <div class="col-md-4" th:if="${borrowedCopies.size()>0}">
+                                                    <h6 class="font-14">Sách đang được mượn:</h6>
+                                                    <p class="text-sm lh-150"th:text="${borrowedCopies.size()}">1</p>
+                                                </div>
+                                                <div class="col-md-4" th:if="${otherCopies.size()>0}">
+                                                    <h6 class="font-14">Sách bị mất hoặc hỏng:</h6>
+                                                    <p class="text-sm lh-150"th:text="${otherCopies.size()}">1</p>
+                                                </div>
+
+                                            </div>
+
+                                        </form>
+                                    </div> <!-- end col -->
+                                </div> <!-- end row-->
+
+                                <div class="table-responsive mt-4">
+                                    <table class="table table-bordered table-centered mb-0">
+                                        <tbody>
+                                        <tr>
+                                            <td class="w-25"><strong>Tên</strong></td>
+                                            <td th:text="${book.title}"><a href="javascript: void(0);"
+                                                                           class="text-muted"><i
+                                                    class="mdi mdi-square-edit-outline ml-2"></i></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Mô tả</strong></td>
+                                            <td th:text="${book.description}">Mô tả
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tác giả</strong></td>
+                                            <td>
+                                                <span th:each="author : ${book.authors}">
+                                                <a th:href="@{/authors/{id}(id=${author.id})}"
+                                                   class="badge badge-outline-secondary" th:text="${author.name}">Secondary</a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Ngôn ngữ</strong></td>
+                                            <td th:text="${book.language}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Thể loại</strong></td>
+                                            <td> <span th:each="category : ${book.categories}">
+                                                <a th:href="@{/categories/{id}(id=${category.id})}"
+                                                   class="badge badge-outline-secondary" th:text="${category.name}">Secondary</a>
+                                                </span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Nhà xuất bản</strong></td>
+                                            <td>
+                                                <a th:href="@{/publishers/{id}(id=${book.publisher.id})}"
+                                                   class="badge badge-outline-secondary" th:text="${book.publisher.name}">Secondary</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Năm xuất bản</strong></td>
+                                            <td th:text="${book.publicationYear}">2010</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>ISBN</strong></td>
+                                            <td th:text="${book.getIsbn}">$139.58</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Giá trị</strong></td>
+                                            <td th:text="${book.price}">$139.58</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div> <!-- end table-responsive-->
+
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                </div>
+                <!-- end row -->
+
+            </div> <!-- End Content -->
+
+            <!-- Footer Start -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+            <!-- end Footer -->
+
+        </div> <!-- content-page -->
+
+    </div> <!-- end wrapper-->
+</div>
+<!-- END Container -->
+
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/jquery.dataTables.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.bootstrap4.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.responsive.min.js}"></script>
+<script th:src="@{/assets/js/vendor/responsive.bootstrap4.min.js}"></script>
+<!-- third party js ends -->
+
+<!-- demo app -->
+<script>
+    $(document).ready(function () {
+        // Lấy CSRF token và header từ meta tags
+        var csrfToken = $("meta[name='_csrf']").attr("content");
+        var csrfHeader = $("meta[name='_csrf_header']").attr("content");
+        "use strict";
+        $("#basic-datatable").DataTable({
+            keys: !0,
+            language: {
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+            }
+        });
+        $("#updateAuthorForm").on('submit', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                type: "POST",
+                url: "/authors/update",
+                data: formData,
+                processData: false, // Không xử lý dữ liệu FormData
+                contentType: false, // Không đặt header Content-Type tự động
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                    // Hiển thị spinner loading
+                    $("#edit-submit-button").html('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+                },
+                success: function (response) {
+                    // Ẩn spinner và hiển thị thông báo thành công
+                    $("#edit-submit-button").html('Cập nhật');
+                    $("#author-name-display").text(response.name);
+                    $("#close-modal").click(function () {
+                    });
+                    $.NotificationApp.send("Cập nhật thành công", response.name, "top-right", "#5ba035", "success");
+                },
+                error: function (response) {
+                    // Ẩn spinner và hiển thị thông báo lỗi
+                    $("#edit-submit-button").html('Cập nhật');
+                    $.NotificationApp.send("Lỗi", "Có lỗi xảy ra khi cập nhật", "top-right", "#bf441d", "error");
+                }
+            });
+        });
+    });
+</script>
+<!-- end demo js-->
+</body>
+
+</html>

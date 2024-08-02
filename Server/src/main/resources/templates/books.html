@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <title th:text="${pageTitle}">Tiêu đề mặc định</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- third party css -->
+    <link th:href="@{/assets/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/dataTables.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/responsive.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/buttons.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor/select.bootstrap4.css}" rel="stylesheet" type="text/css"/>
+    <!-- third party css end -->
+
+    <!-- App css -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app-modern.min.css}" rel="stylesheet" type="text/css" id="light-style"/>
+    <link th:href="@{/assets/css/app-modern-dark.min.css}" rel="stylesheet" type="text/css" id="dark-style"/>
+
+</head>
+
+<body class="loading" data-layout="detached"
+      data-layout-config='{"leftSidebarCondensed":false,"darkMode":false, "showRightSidebarOnStart": false}'>
+
+<!-- Topbar Start -->
+<div th:replace="~{fragments/topBar :: topBar}"></div>
+<!-- end Topbar -->
+
+<!-- Start Content-->
+<div class="container-fluid">
+
+    <!-- Begin page -->
+    <div class="wrapper">
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div th:replace="~{fragments/leftSidebar :: left-bar}"></div>
+        <!-- Left Sidebar End -->
+
+        <div class="content-page">
+            <div class="content">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <!--                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>-->
+                                    <!--                                    <li class="breadcrumb-item"><a href="javascript: void(0);">eCommerce</a></li>-->
+                                    <li class="breadcrumb-item active">Sách</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Sách</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-sm-8">
+                                        <a href="javascript:void(0);" class="btn btn-success mb-2" data-toggle="modal"
+                                           data-target="#add-modal"><i
+                                                class="mdi mdi-plus-circle mr-2"></i> Thêm sách mới</a>
+                                    </div>
+                                    <div class="col-sm-8">
+                                        <a href="javascript:void(0);" class="btn btn-primary mb-2" data-toggle="modal"
+                                           data-target="#add-excel-modal"><i
+                                                class="mdi mdi-plus-circle mr-2"></i> Nhập sách bằng file excel</a>
+                                    </div>
+                                    <div id="add-excel-modal" class="modal fade" tabindex="-1" role="dialog"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <h1 class="text-center">Nhập dữ liệu sách </h1>
+
+                                                    <form id="uploadExcel" class="pl-3 pr-3">
+                                                        <div class="form-group">
+                                                            <label for="fileinput">Chọn file</label>
+                                                            <input type="file" id="fileinput" name="file" class="form-control-file">
+
+                                                        </div>
+
+                                                        <ol class="text-muted">
+                                                            <li>
+                                                                <a href="/books/template" id="download-template-link">Tải
+                                                                    xuống mẫu Excel</a>
+                                                            </li>
+                                                            <li>
+                                                                Điền thông tin sách vào file Excel:
+                                                                <ol>
+                                                                    <li>Tiêu đề: Điền tiêu đề của cuốn sách.</li>
+                                                                    <li>Mô tả: Điền mô tả ngắn gọn về cuốn sách.</li>
+                                                                    <li>Năm xuất bản: Điền năm xuất bản của cuốn sách
+                                                                        (ví dụ: 2021).
+                                                                    </li>
+                                                                    <li>Nhà xuất bản: Chọn hoặc điền tên nhà xuất bản.
+                                                                        Nếu nhà xuất bản không tồn tại trong danh sách,
+                                                                        hệ thống sẽ tự động thêm mới.
+                                                                    </li>
+                                                                    <li>Ngôn ngữ: Điền ngôn ngữ của cuốn sách (ví dụ:
+                                                                        Tiếng Việt, Tiếng Anh).
+                                                                    </li>
+                                                                    <li>ISBN: Điền mã ISBN của cuốn sách.</li>
+                                                                    <li>Kích thước: Điền kích thước của cuốn sách (ví
+                                                                        dụ: 20x30 cm).
+                                                                    </li>
+                                                                    <li>Giá: Điền giá của cuốn sách.</li>
+                                                                    <li>Thể loại: Chọn hoặc điền tên các thể loại của
+                                                                        cuốn sách, phân tách bằng dấu phẩy (ví dụ:
+                                                                        Fiction, Science).
+                                                                    </li>
+                                                                    <li>Tác giả: Chọn hoặc điền tên các tác giả của cuốn
+                                                                        sách, phân tách bằng dấu phẩy (ví dụ: Author A,
+                                                                        Author B).
+                                                                    </li>
+                                                                    <li>Số lượng: Điền số lượng bản sao (copies) của
+                                                                        cuốn sách.
+                                                                    </li>
+                                                                </ol>
+                                                            </li>
+                                                        </ol>
+                                                        <div class="form-group text-center">
+                                                            <button style="width: 100px;"
+                                                                    class="btn btn-rounded btn-primary edit-submit-button"
+                                                                    type="submit">Cập nhật
+                                                            </button>
+                                                            <button type="button" style="width: 100px;"
+                                                                    class="btn btn-rounded btn-light close-modal"
+                                                                    data-dismiss="modal">Huỷ
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div><!-- /.modal-content -->
+                                        </div><!-- /.modal-dialog -->
+                                    </div><!-- /.modal -->
+                                    <div id="add-modal" class="modal fade" tabindex="-1" role="dialog"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <h1 class="text-center">Thêm sách mới</h1>
+                                                    <form id="addBookForm" class="pl-3 pr-3 row"
+                                                          enctype="multipart/form-data">
+                                                        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                                                        <div class="col-6">
+                                                            <div class="form-group">
+                                                                <label for="title">Tiêu đề</label>
+                                                                <input type="text" id="title" name="title"
+                                                                       class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="description">Mô tả</label>
+                                                                <textarea id="description" name="description"
+                                                                          class="form-control" required></textarea>
+                                                            </div>
+
+
+
+                                                            <div class="form-group">
+                                                                <label for="publicationYear">Năm xuất bản</label>
+                                                                <input type="text" id="publicationYear"
+                                                                       name="publicationYear" class="form-control"
+                                                                       required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="publisher">Nhà xuất bản</label>
+                                                                <input type="text" id="publisher" name="publisher"
+                                                                       class="form-control" required>
+                                                                <select id="publisherSelect" class="custom-select mb-3"
+                                                                        onchange="updatePublisher()">
+                                                                    <option selected disabled>Chọn nhà xuất bản</option>
+                                                                    <option th:each="publisher : ${publishers}"
+                                                                            th:value="${publisher.name}"
+                                                                            th:text="${publisher.name}"></option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="categories">Thể loại</label>
+                                                                <input type="text" id="categories" name="categories"
+                                                                       class="form-control" required>
+                                                                <select id="categoriesSelect" class="custom-select mb-3"
+                                                                        multiple onchange="updateCategories()">
+                                                                    <option th:each="category : ${categories}"
+                                                                            th:value="${category.name}"
+                                                                            th:text="${category.name}"></option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="authors">Tác giả</label>
+                                                                <input type="text" id="authors" name="authors"
+                                                                       class="form-control" required>
+                                                                <select id="authorsSelect" class="custom-select mb-3"
+                                                                        multiple onchange="updateAuthors()">
+                                                                    <option th:each="author : ${authors}"
+                                                                            th:value="${author.name}"
+                                                                            th:text="${author.name}"></option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="form-group">
+                                                                <label for="language">Ngôn ngữ</label>
+                                                                <input type="text" id="language" name="language"
+                                                                       class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="isbn">ISBN</label>
+                                                                <input type="text" id="isbn" name="isbn"
+                                                                       class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="format">Kích thước</label>
+                                                                <input type="text" id="format" name="format"
+                                                                       class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="price">Giá</label>
+                                                                <input type="number" id="price" name="price"
+                                                                       class="form-control" required>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="quantity">Số lượng</label>
+                                                                <input type="number" id="quantity" name="quantity"
+                                                                       class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="image">Ảnh bìa</label>
+                                                                <input type="file" id="image" name="image"
+                                                                       class="form-control-file" required>
+                                                            </div>
+                                                            <div class="form-group text-center">
+                                                                <button style="width: 100px;"
+                                                                        class="btn btn-rounded btn-primary edit-submit-button"
+                                                                        type="submit">Cập nhật
+                                                                </button>
+                                                                <button type="button" style="width: 100px;"
+                                                                        class="btn btn-rounded btn-light close-modal"
+                                                                        data-dismiss="modal">Huỷ
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div><!-- /.modal-content -->
+                                        </div><!-- /.modal-dialog -->
+                                    </div><!-- /.modal -->
+
+                                    <div class="col-lg-4">
+                                        <div class="text-lg-right">
+                                            <button id="download-books-button" type="button" class="btn btn-light mb-2">
+                                                Xuất file dữ liệu tất cả sách
+                                            </button>
+                                        </div>
+                                    </div><!-- end col-->
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-centered w-100 dt-responsive "
+                                           id="basic-datatable">
+                                        <thead class="thead-light">
+                                        <tr>
+                                            <th class="all">
+                                                ID
+                                            </th>
+                                            <th>Hình ảnh</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Tác giả</th>
+                                            <th>Thể loại</th>
+                                            <th>Ngôn ngữ</th>
+                                            <th>Số lượng</th>
+                                            <th>Trạng thái</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="book : ${bookList }">
+
+                                            <td th:text="${book.id}"></td>
+                                            <td>
+                                                <img th:src="${book.image}"
+                                                     alt="book-img" title="book-img" class="rounded mr-3"
+                                                     height="48"/>
+                                            </td>
+                                            <td>
+                                                <p class="m-0 d-inline-block align-middle font-16">
+                                                    <a th:href="@{/books/{id}(id=${book.id})}"
+                                                       class="text-body" th:text="${book.title}">ĐỪNG THÁCH THỨC NHÂN
+                                                        TÍNH</a>
+                                                </p>
+                                            </td>
+                                            <td>
+                                                <span th:each="author, iterStat : ${book.authors}">
+                                                <a th:href="@{/authors/{id}(id=${author.id})}"
+                                                   class="badge badge-outline-secondary" th:text="${author.name}">Secondary</a>
+                                                    <!--                                                    <hr th:unless="${iterStat.last}"/>-->
+                                                </span>
+                                            </td>
+                                            <td>
+                                                 <span th:each="category, iterStat : ${book.categories}">
+                                                <a th:href="@{/categories/{id}(id=${category.id})}"
+                                                   class="badge badge-outline-secondary" th:text="${category.name}">Secondary</a>
+                                                     <!--                                                    <hr th:unless="${iterStat.last}"/>-->
+                                                </span>
+                                            </td>
+                                            <td th:text="${book.language}">
+                                                VN
+                                            </td>
+
+                                            <td th:text="${#lists.size(book.copies)}">
+                                                3
+                                            </td>
+                                            <td th:text="${book.status.displayName}">
+                                            </td>
+
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col -->
+                </div>
+                <!-
+                - end row -->
+
+            </div> <!-- End Content -->
+
+            <!-- Footer Start -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
+            <!-- end Footer -->
+
+        </div> <!-- content-page -->
+
+    </div> <!-- end wrapper-->
+</div>
+<!-- END Container -->
+
+
+<!-- Right Sidebar -->
+<div th:replace="~{fragments/rightSidebar :: right-bar}"></div>
+<!-- /Right-bar -->
+
+
+<!-- bundle -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- third party js -->
+<script th:src="@{/assets/js/vendor/jquery.dataTables.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.bootstrap4.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.responsive.min.js}"></script>
+<script th:src="@{/assets/js/vendor/responsive.bootstrap4.min.js}"></script>
+<script th:src="@{/assets/js/vendor/dataTables.checkboxes.min.js}"></script>
+<!-- third party js ends -->
+<!-- plugin js -->
+<script th:src="@{/assets/js/vendor/dropzone.min.js}"></script>
+<!-- init js -->
+<script th:src="@{/assets/js/ui/component.fileupload.js}"></script>
+<!-- demo app -->
+<script>
+    $(document).ready(function () {
+        "use strict";
+        $("#basic-datatable").DataTable({
+            keys: !0,
+            language: {
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+            }
+        });
+        $("#download-template-link").click(function () {
+            window.location.href = "/books/template";
+        });
+
+        $("#uploadExcel").on('submit', function (e) {
+            e.preventDefault();
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                type: "POST",
+                url: "/books/upload",
+                data: formData,
+                processData: false, // Không xử lý dữ liệu FormData
+                contentType: false, // Không đặt header Content-Type tự động
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                    // Hiển thị spinner loading
+                    $(".edit-submit-button").html('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+                },
+                success: function (response) {
+                    // Ẩn spinner và hiển thị thông báo thành công
+                    $(".edit-submit-button").html('Cập nhật');
+                    $(".close-modal").click();
+                    $.NotificationApp.send("Cập nhật thành công", "Dữ liệu sách đã được tải lên thành công", "top-right", "#5ba035", "success");
+                    location.reload();
+                },
+                error: function (response) {
+                    // Ẩn spinner và hiển thị thông báo lỗi
+                    $(".edit-submit-button").html('Cập nhật');
+                    $.NotificationApp.send("Lỗi", "Có lỗi xảy ra khi tải lên dữ liệu sách", "top-right", "#bf441d", "error");
+                }
+            });
+        });
+
+
+        $("#addBookForm").on('submit', function (e) {
+            e.preventDefault();
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+            var formData = new FormData(this);
+
+            $.ajax({
+                type: "POST",
+                url: "/books/add",
+                data: formData,
+                processData: false, // Không xử lý dữ liệu FormData
+                contentType: false, // Không đặt header Content-Type tự động
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
+                    // Hiển thị spinner loading
+                    $(".edit-submit-button").html('<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>');
+                },
+                success: function (response) {
+                    // Ẩn spinner và hiển thị thông báo thành công
+                    $(".edit-submit-button").html('Cập nhật');
+                    $(".close-modal").click();
+                    $.NotificationApp.send("Cập nhật thành công", "Sách đã được thêm thành công", "top-right", "#5ba035", "success");
+                    location.reload(); // Tải lại trang để cập nhật danh sách sách
+                },
+                error: function (response) {
+                    // Ẩn spinner và hiển thị thông báo lỗi
+                    $(".edit-submit-button").html('Cập nhật');
+                    $.NotificationApp.send("Lỗi", "Có lỗi xảy ra khi thêm sách", "top-right", "#bf441d", "error");
+                }
+            });
+        });
+
+        function updatePublisher() {
+            var selectedValue = $('#publisherSelect').val();
+            $('#publisher').val(selectedValue);
+        }
+
+        function updateCategories() {
+            var selectedValues = $('#categoriesSelect').val();
+            $('#categories').val(selectedValues.join(', '));
+        }
+
+        function updateAuthors() {
+            var selectedValues = $('#authorsSelect').val();
+            $('#authors').val(selectedValues.join(', '));
+        }
+        window.updateCategories = updateCategories;
+        window.updateAuthors = updateAuthors;
+        window.updatePublisher = updatePublisher;
+    });
+</script>
+
+</body>
+
+</html>
