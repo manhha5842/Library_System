@@ -1,38 +1,61 @@
 # Library Management System
 
 ## Overview
-The Library Management System is a comprehensive solution for managing a university library. It includes a mobile application for students and a web-based admin portal for library staff. The system streamlines the process of searching for, reserving, and managing books.
+The Library Management System is a comprehensive solution designed for university libraries. It consists of a mobile application for students and staff, and an admin website for library management.
 
 ## Features
 ### Mobile Application (React Native)
-- **Search Books**: Allows students to search for books by title, author, or ISBN.
-- **Check Availability**: Displays the availability status of each book.
-- **Reserve Books**: Enables students to reserve books online.
-- **Account Management**: Provides functionality for students to view and manage their library accounts.
+- **User Authentication**: Secure login and registration for users.
+- **Book Search**: Search for books by title, author, or category.
+- **Reservation Management**: Reserve books and receive notifications for due dates.
+- **Push Notifications**: Reminders for due dates and important announcements.
 
-### Admin Website (Spring Web)
-- **Inventory Management**: Allows library staff to add, update, and delete book records.
-- **Borrow and Return Tracking**: Tracks which books are borrowed, returned, and overdue.
-- **User Management**: Manages student and staff accounts.
-- **Reporting**: Generates reports on library usage, book circulation, and more.
-- **Security**: Implements user authentication and authorization using JWT.
+### Admin Website (Spring Boot)
+- **User Management**: Manage student and staff accounts with role-based access control.
+- **Book Inventory**: Perform CRUD operations on the library's book inventory.
+- **Loan Management**: Oversee book loans, returns, and track overdue items.
+- **Analytics Dashboard**: Visualize library usage statistics with interactive charts.
+- **Security**: Implement JWT authentication and Spring Security for a secure application.
 
 ## Technologies Used
-- **React Native**: For developing the cross-platform mobile application.
-- **Spring Web**: For building the backend admin portal.
-- **Java**: Core language for backend development.
-- **MySQL**: Database management for storing and retrieving book and user information.
-- **JWT**: For secure user authentication and session management.
-- **RESTful APIs**: To enable communication between the mobile application and the backend server.
+### Mobile Application
+- **React Native**: For building cross-platform mobile applications.
+- **JavaScript**: Programming language used with React Native.
+
+### Admin Website
+- **Spring Boot**: Framework for building the backend application.
+- **Spring Data JPA**: For database interactions.
+- **Spring Security**: For securing the application.
+- **MySQL**: Database management system.
+
+### Other Tools
+- **Maven**: For project build and dependency management.
+- **JUnit**: For testing the application.
 
 ## Installation
-### Prerequisites
-- **Java 17**: Ensure Java is installed and the environment variable is set.
-- **Node.js**: Required for React Native development.
-- **MySQL**: Database for storing application data.
 
-### Backend (Admin Website)
+### Mobile Application
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/manhha5842/Library_System.git
+   cd Library_System/Mobile
+2. **Install dependencies:**
+  ```sh
+   npm install
+4. **Run the application:**
+  ```sh
+   npx react-native run-android # for Android
+   npx react-native run-ios # for iOS
+
+### Admin Website 
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/manhha5842/Library_System.git
    cd Library_System/Server
+2. **Setup the database:**
+   Create a MySQL database named library_system.
+   Update the src/main/resources/application.properties file with your database credentials.
+4. **Build and run the application:**
+      ```sh
+   ./mvnw clean install
+   ./mvnw spring-boot:run
