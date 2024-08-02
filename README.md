@@ -40,10 +40,10 @@ The Library Management System is a comprehensive solution designed for universit
    git clone https://github.com/manhha5842/Library_System.git
    cd Library_System/Mobile
 2. **Install dependencies:**
-  ```sh
+   ```sh
    npm install
 4. **Run the application:**
-  ```sh
+   ```sh
    npx react-native run-android # for Android
    npx react-native run-ios # for iOS
 
