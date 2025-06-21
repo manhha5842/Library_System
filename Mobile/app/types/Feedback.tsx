@@ -1,3 +1,5 @@
+import { FeedbackStatus } from "./enums";
+
 export type Feedback = {
     id: string;
     studentId: string;
@@ -6,7 +8,7 @@ export type Feedback = {
     image: string;
     reason: string;
     proposedSolution: string;
-    status: string;
+    status: FeedbackStatus;
     createdAt: string;
     updatedAt: string;
     reply: string;

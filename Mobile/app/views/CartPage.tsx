@@ -4,12 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Container, Text, HStack, VStack, Heading, Button, Image, Badge, WarningOutlineIcon, Icon, Pressable, ZStack, Center, Input, Radio, Stack, SectionList, Divider, Slide, Alert, Skeleton, Spinner, AlertDialog } from "native-base"
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import api from '../config/apiConfig';
 import { useUser } from '../context/UserContext';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../constants';
-import { useCarts } from '../context/CartContext';
+import { useCart } from '../context/CartContext';
 import { useBooks } from '../context/BookContext';
 import MyDateTimePicker from '../components/MyDateTimePicker';
 import { RefreshControl } from 'react-native-gesture-handler';
@@ -23,7 +23,7 @@ type CartPageRouteProp = RouteProp<RootStackParamList, 'Cart'>;
 
 export default function CartPage() {
     const navigation = useNavigation<CartPageNavigationProp>();
-    const { carts, unavailableBooks, checkAvailable, addBook, deleteBook } = useCarts();
+    const { carts, unavailableBooks, checkAvailable, addBook, deleteBook } = useCart();
     const route = useRoute<CartPageRouteProp>();
     const isDefault = route.params?.isDefault ?? true;
     const [selectedBooks, setSelectedBooks] = useState(new Set<string>());
@@ -209,7 +209,7 @@ export default function CartPage() {
                             resizeMode="cover" borderRadius={16} h={"32"} alt='Banner Image' width={'100%'} />
                     </Box>
                     <Text color={'coolGray.600'}>Chọn ngày nhận sách dự kiến</Text>
-                    <MyDateTimePicker selectDate={selectDate} setSelectDate={setSelectDate} setDueDate={setDueDate} />
+                    <MyDateTimePicker selectDate={selectDate} setSelectDate={setSelectDate} />
                     <RenderBook />
                 </VStack>
             </ScrollView >

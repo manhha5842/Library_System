@@ -1,16 +1,22 @@
 import React, { createContext, useState, useContext, useEffect, useCallback, ReactNode } from 'react';
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import api from '../config/apiConfig';
 import { useUser } from './UserContext';
 import { Book, BookDetail, Category } from '../types';
+
 type BookContextType = {
     bookDetail: BookDetail | null;
     books: Book[];
+    recommendedBooks: Book[];
+    newestBooks: Book[];
+    popularBooks: Book[];
     isFetching: boolean;
     hasMore: boolean;
     setBooks: (books: Book[]) => void;
-    searchBooks: (query: string | undefined, page: number, size: number) => Promise<void | any>;
-    recommendBooks: () => Promise<void>;
+    searchBooks: (query: string | undefined, page: number, size: number) => Promise<void | any>;    
+    fetchRecommendBooks: () => Promise<void>;
+    fetchNewestBooks: () => Promise<void>;
+    fetchPopularBooks: () => Promise<void>;
     fetchBookDetail: (id: string | undefined) => Promise<void>;
     fetchBookByCategory: (id: string | undefined) => Promise<void>;
     fetchBookByAuthor: (id: string | undefined) => Promise<void>;
@@ -21,11 +27,16 @@ type BookContextType = {
 const defaultContextValue: BookContextType = {
     bookDetail: null,
     books: [],
+    recommendedBooks: [],
+    newestBooks: [],
+    popularBooks: [],
     isFetching: false,
     hasMore: false,
     setBooks: async () => { },
     searchBooks: async () => { },
-    recommendBooks: async () => { },
+    fetchRecommendBooks: async () => { },
+    fetchNewestBooks: async () => { },
+    fetchPopularBooks: async () => { },
     fetchBookDetail: async () => { },
     fetchBookByCategory: async () => { },
     fetchBookByAuthor: async () => { },
@@ -40,6 +51,9 @@ const BookContext = createContext<BookContextType>(defaultContextValue);
 export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
     const [bookDetail, setBookDetail] = useState<BookDetail | null>(null);
     const [books, setBooks] = useState<Book[]>([]);
+    const [recommendedBooks, setRecommendedBooks] = useState<Book[]>([]);
+    const [newestBooks, setNewestBooks] = useState<Book[]>([]);
+    const [popularBooks, setPopularBooks] = useState<Book[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [hasMore, setHasMore] = useState(false);
@@ -48,7 +62,7 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
     const searchBooks = async (query: string | undefined, page = 0, size = 20) => {
         try {
             setIsFetching(true);
-            let response = await axios.get(`${apiConfig.baseURL}/api/books/search`, {
+            let response = await api.get(`/books/search`, {
                 params: { keyword: query, page, size },
             });
 
@@ -72,7 +86,7 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
             setIsFetching(false);
         }
     };
-    const recommendBooks = async () => {
+    const fetchRecommendBooks = async () => {
         console.info('Get recommend books');
         if (isFetching) {
             console.info('Fetching data from other requests');
@@ -80,13 +94,47 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
         } else {
             try {
                 setIsFetching(true);
-                const response = await axios.get<Book[]>(`${apiConfig.baseURL}/api/books/getRecommendBooks`);
+                const response = await api.get<Book[]>(`/books/getRecommendBooks`);
                 if (response?.status === 200) {
-                    setBooks(response.data);
+                    setRecommendedBooks(response.data);
                 }
             } catch (error) {
                 console.log('Error getting recommend books', error);
+                throw error;
+            } finally {
+                setIsFetching(false);
             }
+        }
+    };
+
+    const fetchNewestBooks = async () => {
+        if (isFetching) return;
+        setIsFetching(true);
+        try {
+            const response = await api.get<Book[]>(`/books/newest`);
+            if (response.status === 200) {
+                setNewestBooks(response.data);
+            }
+        } catch (error) {
+            console.log('Error getting newest books', error);
+            throw error;
+        } finally {
+            setIsFetching(false);
+        }
+    };
+
+    const fetchPopularBooks = async () => {
+        if (isFetching) return;
+        setIsFetching(true);
+        try {
+            const response = await api.get<Book[]>(`/books/popular`);
+            if (response.status === 200) {
+                setPopularBooks(response.data);
+            }
+        } catch (error) {
+            console.log('Error getting popular books', error);
+            throw error;
+        } finally {
             setIsFetching(false);
         }
     };
@@ -99,14 +147,16 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
         } else {
             try {
                 setIsFetching(true);
-                const response = await axios.get<BookDetail>(`${apiConfig.baseURL}/api/books/getBookInfo/${id}`);
+                const response = await api.get<BookDetail>(`/books/getBookInfo/${id}`);
                 if (response?.status === 200) {
                     setBookDetail(response.data);
                 }
             } catch (error) {
                 console.log('Error fetch book info', error);
+                throw error;
+            } finally {
+                setIsFetching(false);
             }
-            setIsFetching(false);
         }
     };
     const fetchBookByCategory = async (id: string | undefined) => {
@@ -120,13 +170,13 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
                 console.info('Fetching data ');
                 setIsFetching(true); // Bắt đầu fetching, đặt trạng thái là true
                 try {
-                    const response = await axios.get<Book[]>(`${apiConfig.baseURL}/api/books/getBooksByCategory/${id}`);
+                    const response = await api.get<Book[]>(`/books/getBooksByCategory/${id}`);
                     if (response?.status === 200) {
                         setBooks(response.data);
                     }
                 } catch (error) {
                     console.log('Fetching books failed', error);
-                    // Xử lý lỗi nếu cần
+                    throw error;
                 } finally {
                     setIsFetching(false); // Kết thúc fetching, đặt trạng thái về false
                 }
@@ -141,15 +191,15 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
             return;
         } else {
             if (id) {
-                setIsFetching(true); // Bắt đầu fetching, đặt trạng thái là true
+                setIsFetching(true); // Bắt đầu fetching, đặt trạng thái là true        
                 try {
-                    const response = await axios.get<Book[]>(`${apiConfig.baseURL}/api/books/getBooksByAuthor/${id}`);
+                    const response = await api.get<Book[]>(`/books/getBooksByAuthor/${id}`);
                     if (response?.status === 200) {
                         setBooks(response.data);
                     }
                 } catch (error) {
                     console.log('Fetching books failed', error);
-                    // Xử lý lỗi nếu cần
+                    throw error;
                 } finally {
                     setIsFetching(false); // Kết thúc fetching, đặt trạng thái về false
                 }
@@ -167,7 +217,7 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
                 setIsFetching(true); // Bắt đầu fetching, đặt trạng thái là true
                 try {
                     const fetchPromises = ids.map(id =>
-                        axios.get<Book>(`${apiConfig.baseURL}/api/books/${id}`).then(response => response.data)
+                        api.get<Book>(`/books/${id}`).then(response => response.data)
                     );
 
                     const resultBooks = await Promise.all(fetchPromises);
@@ -175,7 +225,7 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
                     addBooksToState(resultBooks);
                 } catch (error) {
                     console.log('Fetching books failed', error);
-                    // Xử lý lỗi nếu cần
+                    throw error;
                 } finally {
                     setIsFetching(false); // Kết thúc fetching, đặt trạng thái về false
                 }
@@ -221,8 +271,8 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
     };
     return (
         <BookContext.Provider value={{
-            bookDetail, books, isFetching, hasMore,
-            setBooks, searchBooks, recommendBooks,
+            bookDetail, books, isFetching, hasMore, recommendedBooks, newestBooks, popularBooks,
+            setBooks, searchBooks, fetchRecommendBooks, fetchNewestBooks, fetchPopularBooks,
             fetchBookDetail, fetchBookByCategory, fetchBookByAuthor, fetchBookByIds,
             sortBooks
         }}>

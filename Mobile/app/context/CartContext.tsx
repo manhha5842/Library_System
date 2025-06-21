@@ -2,7 +2,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { Book, BookDetail } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import api from '../config/apiConfig';
 
 interface CartContextType {
     carts: Book[] | null;
@@ -13,7 +13,7 @@ interface CartContextType {
     checkAvailable: () => void;
 }
 
-const defaultContextValue: CartContextType = {
+const defaultContextValue: CartContextType = {  
     carts: null,
     unavailableBooks: null,
     addBook: async () => { },
@@ -116,7 +116,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
             // Fetch all book details
             const fetchPromises = allBooks.map(item =>
-                axios.get<Book>(`${apiConfig.baseURL}/api/books/${item.id}`).then(response => response.data)
+                api.get<Book>(`/books/${item.id}`).then(response => response.data)
             );
             const resultBooks = await Promise.all(fetchPromises);
 
@@ -179,11 +179,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     );
 };
 
-export const useCarts = () => {
+export const useCart = () => {
     const context = useContext(CartContext);
 
     if (!context) {
-        throw new Error('useCarts must be used within a CategoryProvider');
+        throw new Error('useCart must be used within a CartProvider');
     }
 
     return context;

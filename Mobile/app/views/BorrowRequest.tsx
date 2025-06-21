@@ -3,7 +3,7 @@ import { Animated, StyleSheet, ImageBackground, SafeAreaView, KeyboardAvoidingVi
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Container, Text, HStack, VStack, Heading, Input, Image, Badge, WarningOutlineIcon, ScrollView, Icon, Pressable, ZStack, Center, Spinner, Skeleton, Select, CheckIcon, Button, Flex, Divider, Stack, Slider, AddIcon, MinusIcon, TextArea, AlertDialog } from "native-base"
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import api from '../config/apiConfig';
 import { useUser } from '../context/UserContext';
 import { BookProvider, useBooks } from '../context/BookContext';
 
@@ -11,7 +11,9 @@ import { RootStackParamList } from '../constants';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Book, Category } from '../types';
 import MyDateTimePicker from '../components/MyDateTimePicker';
-import { useCarts } from '../context/CartContext';
+import { useCart } from '../context/CartContext';
+import { mockBooks } from '../types/mockData';
+import { useToast } from 'native-base';
 type BorrowRequestNavigationProp = StackNavigationProp<
     RootStackParamList,
     'BorrowRequest'
@@ -20,8 +22,9 @@ type BorrowRequestRouteProp = RouteProp<RootStackParamList, 'BorrowRequest'>;
 
 export default function BorrowRequest() {
     const { user } = useUser();
-    const { deleteBook } = useCarts();
     const navigation = useNavigation<BorrowRequestNavigationProp>();
+    const toast = useToast();
+    const { deleteBook } = useCart();
     const [refreshing, setRefreshing] = useState(false);
     const [isLoadedBook, setIsLoadedBook] = useState(false);
     const route = useRoute<BorrowRequestRouteProp>();
@@ -89,7 +92,7 @@ export default function BorrowRequest() {
             await setIsPending(true);
             console.log(isPending);
             console.log("đang gửi yêu cầu");
-            const response = await axios.post(`${apiConfig.baseURL}/api/request/createBorrowRecord`, borrowRecordDTO, {
+            const response = await api.post(`/request/createBorrowRecord`, borrowRecordDTO, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -114,18 +117,20 @@ export default function BorrowRequest() {
     };
     const RenderBook = () => {
         const { books, fetchBookByIds, isFetching } = useBooks();
+        const [localBooks, setLocalBooks] = useState(books);
         useEffect(() => {
             const fetchDataBook = async () => {
                 console.log('Fetching data book');
                 try {
                     await fetchBookByIds(selectedBookIds);
+                } catch (e) {
+                    setLocalBooks(mockBooks);
                 } finally {
                     setIsLoadedBook(true);
-
                 }
             };
             if (!isLoadedBook || books.length == 0) fetchDataBook();
-            if (selectBooks.length <= 0) setSelectBooks(books);
+            if (selectBooks.length <= 0) setSelectBooks(books.length > 0 ? books : mockBooks);
         }, []);
 
 
@@ -144,7 +149,7 @@ export default function BorrowRequest() {
                 </VStack>
             );
         };
-        if (books.length == 0 || isFetching) {
+        if ((books.length == 0 && !localBooks.length) || isFetching) {
             return (
                 <VStack space={3}>
                     <RenderSkeletonBoxes count={selectedBookIds.length} />
@@ -152,7 +157,7 @@ export default function BorrowRequest() {
         }
         return (
             <VStack space={3}>
-                {(isExpand ? books : books.slice(0, 3)).map((book) => (
+                {(isExpand ? (books.length > 0 ? books : localBooks) : (books.length > 0 ? books : localBooks).slice(0, 3)).map((book) => (
                     <Box key={book.id}
                         flexDirection={"row"} shadow={5} width={"100%"} height={16} borderRadius={15} overflow="hidden" bg={'white'}
                     >
@@ -245,7 +250,7 @@ export default function BorrowRequest() {
                                 <Text color={'coolGray.400'} fontSize={'10'}>Chỉ được đặt hẹn không quá 30 ngày</Text>
                             </Box>
 
-                            <MyDateTimePicker selectDate={selectDate} setSelectDate={setSelectDate} setDueDate={setDueDate} />
+                            <MyDateTimePicker selectDate={selectDate} setSelectDate={setSelectDate} />
                             <Box pb={3}>
                                 <Text fontWeight={600}>Thời hạn mượn</Text>
                                 <Text color={'coolGray.400'} fontSize={'10'} pl={1}>Thời gian mượn tối đa 14 ngày</Text>

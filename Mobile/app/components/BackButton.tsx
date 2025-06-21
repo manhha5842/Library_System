@@ -1,14 +1,18 @@
 import React from 'react';
 import { Box, Pressable, Image } from 'native-base';
-import { NavigationProp } from '@react-navigation/native';
-
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../constants/navigationTypes';
 
 type BackButtonProps = {
-    navigation: NavigationProp<RootStackParamList>;
+    title?: string;
 };
 
-export default function BackButton({ navigation }: BackButtonProps) {
+type NavigationHookProp = StackNavigationProp<RootStackParamList>;
+
+export default function BackButton({ title }: BackButtonProps) {
+    const navigation = useNavigation<NavigationHookProp>();
+
     return (
         <Box>
             <Pressable onPress={() => navigation.goBack()} p={3} mt={3}>

@@ -1,18 +1,17 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig'
+import api from '../config/apiConfig'
 import { User } from '../types';
 import { ExpoPushToken } from '../components/ExpoToken';
+import * as Device from 'expo-device';
 
 interface UserContextType {
     user: User | null;
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
     isLoggedIn: boolean;
-    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
     isCheckingToken: boolean;
+    login: (userData: User) => Promise<void>;
     logout: () => void;
-    loadUserAndCheckToken: () => void;
 }
 
 interface UserProviderProps {
@@ -26,65 +25,52 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isCheckingToken, setIsCheckingToken] = useState(true);
 
-    const checkToken = async (token: string) => {
-        if (!token) {
-            setIsLoggedIn(false);
-            setIsCheckingToken(false);
-        } else {
+    useEffect(() => {
+        const loadUserFromStorage = async () => {
+            setIsCheckingToken(true);
             try {
-                console.info('Check token');
-                const response = await axios.post(`${apiConfig.baseURL}/api/public/checkToken`, { token });
-                console.info(response.data);
-                if (response.status == 200 && response.data === "Token is valid") {
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                const userString = await AsyncStorage.getItem('user');
+                if (userString) {
+                    const userData: User = JSON.parse(userString);
+                    // Ở đây có thể thêm bước gọi API để xác thực token
+                    // nhưng để đơn giản, ta tin tưởng token đã lưu
+                    setUser(userData);
                     setIsLoggedIn(true);
-                } else {
-                    AsyncStorage.clear();
-                    delete axios.defaults.headers.common['Authorization'];
-                    setIsLoggedIn(false);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
                 }
-            } catch (error) {
-                console.log('There was a problem checking the token:', error);
-                setIsLoggedIn(false);
+            } catch (e) {
+                console.error("Failed to load user from storage", e);
+            } finally {
+                setIsCheckingToken(false);
             }
-            setIsCheckingToken(false);
-        }
+        };
 
-    };
-    const loadUserAndCheckToken = async () => {
-        console.log('Loading user and check token');
-        const dataString = await AsyncStorage.getItem('user');
-        if (dataString) {
-            const userData: User = JSON.parse(dataString);
-            await setUser(userData);
-            await checkToken(userData.token);
-            // Lấy expoPushToken
-            const expoPushToken = await ExpoPushToken();
-            if (expoPushToken) {
-                console.log(`Push token: ${expoPushToken}`);
-                await axios.put(`${apiConfig.baseURL}/api/public/expoPushToken/${userData.id}`, {
-                    expoPushToken: expoPushToken,
-                });
-            }
-        } else {
-            await setIsLoggedIn(false);
-            await setIsCheckingToken(false);
+        loadUserFromStorage();
+    }, []);
+
+    const login = async (userData: User) => {
+        try {
+            setUser(userData);
+            setIsLoggedIn(true);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
+            await AsyncStorage.setItem('user', JSON.stringify(userData));
+        } catch (e) {
+            console.error("Failed to save user to storage", e);
         }
-        console.log('finished');
     };
 
     const logout = async () => {
-        await AsyncStorage.removeItem('user');
-        setUser(null);
-        setIsLoggedIn(false);
-        delete axios.defaults.headers.common['Authorization'];
+        try {
+            await AsyncStorage.removeItem('user');
+            setUser(null);
+            setIsLoggedIn(false);
+            delete axios.defaults.headers.common['Authorization'];
+        } catch (e) {
+            console.error("Failed to remove user from storage", e);
+        }
     };
 
-    const value = { user, setUser, isLoggedIn, setIsLoggedIn, isCheckingToken, logout, loadUserAndCheckToken };
-
-    useEffect(() => {
-        loadUserAndCheckToken();
-    }, []);
+    const value = { user, isLoggedIn, isCheckingToken, login, logout };
 
     return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

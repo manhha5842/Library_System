@@ -3,11 +3,12 @@ import { RefreshControl } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Text, HStack, VStack, ScrollView, Center, Divider, Spinner, Skeleton, Flex, Button, Heading, Badge, ZStack, Image } from "native-base";
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import api from '../config/apiConfig';
 import { useUser } from '../context/UserContext';
 import { RootStackParamList } from '../constants';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BorrowRecordDetail, Feedback, FineRecord, RenewalRecord } from '../types';
+import { mockFeedbacks } from '../types/mockData';
 
 type FeedBackDetailNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -16,7 +17,7 @@ type FeedBackDetailNavigationProp = StackNavigationProp<
 
 type FeedbackDetailRouteProp = RouteProp<RootStackParamList, 'FeedbackDetail'>;
 
-export default function BorrowRecordDetailPage() {
+export default function FeedbackDetailPage() {
     const route = useRoute<FeedbackDetailRouteProp>();
     const { feedbackId } = route.params;
     const [isLoading, setIsLoading] = useState(false);
@@ -25,18 +26,20 @@ export default function BorrowRecordDetailPage() {
     const [isPending, setIsPending] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
-    const fetchBorrowRecordDetail = async (id: string | undefined) => {
+    const fetchFeedbackDetail = async (id: string | undefined) => {
         if (isLoading || feedbackDetail != null) {
             return;
         } else {
             try {
                 setIsLoading(true);
-                const response = await axios.get<Feedback>(`${apiConfig.baseURL}/api/feedbacks/${id}`);
+                const response = await api.get<Feedback>(`/feedbacks/${id}`);
                 if (response?.status === 200) {
                     setFeedbackDetail(response.data);
                 }
             } catch (error) {
-                console.info('Error fetch borrow record info', error);
+                console.info('Error fetch feedback info', error);
+                const mock = mockFeedbacks.find(f => f.id === id);
+                if (mock) setFeedbackDetail(mock);
             }
             setIsLoading(false);
         }
@@ -45,7 +48,7 @@ export default function BorrowRecordDetailPage() {
     useEffect(() => {
         async function fetchDetails() {
             if (feedbackId) {
-                await fetchBorrowRecordDetail(feedbackId);
+                await fetchFeedbackDetail(feedbackId);
             }
         }
         fetchDetails();
@@ -54,7 +57,7 @@ export default function BorrowRecordDetailPage() {
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         try {
-            await fetchBorrowRecordDetail(feedbackId);
+            await fetchFeedbackDetail(feedbackId);
         } catch (error) {
             console.info('Error refreshing:', error);
         } finally {

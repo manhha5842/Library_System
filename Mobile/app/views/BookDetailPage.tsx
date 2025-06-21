@@ -1,167 +1,97 @@
-import React, { useState, createContext, useRef, useEffect, useCallback } from 'react';
-import { Animated, StyleSheet, ImageBackground, SafeAreaView, KeyboardAvoidingView, Platform, StatusBar, Keyboard, ScrollView, RefreshControl } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-
-import { CategoryProvider, useCategories } from '../context/CategoryContext';
-import { Box, Container, Text, HStack, VStack, Heading, Button, Image, Badge, WarningOutlineIcon, Icon, Pressable, ZStack, Center, Input, Radio, Stack, SectionList, Divider, Spinner, Skeleton } from "native-base"
-import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
-import { useUser } from '../context/UserContext';
-import { BookProvider, useBooks } from '../context/BookContext';
-
+import React from 'react';
+import { ScrollView, RefreshControl } from 'react-native';
+import { Box, VStack, Text, Heading, Spinner, Center, Image, Button, HStack, Badge, useToast } from 'native-base';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../constants';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { CartProvider, useCarts } from '../context/CartContext';
-import { BookDetail } from '../types';
-type BookDetailNavigationProp = StackNavigationProp<
-    RootStackParamList,
-    'BookDetail'
->;
-
+import { useBookDetail } from '../hooks/useBookDetail';
+import BackButton from '../components/BackButton';
+import InfoRow from '../components/detail/InfoRow';
+import { useCart } from '../context/CartContext';
 
 type BookDetailRouteProp = RouteProp<RootStackParamList, 'BookDetail'>;
 
 export default function BookDetailPage() {
-    const navigation = useNavigation<BookDetailNavigationProp>();
     const route = useRoute<BookDetailRouteProp>();
     const { bookId } = route.params;
-    const [refreshing, setRefreshing] = useState(false);
-    const [isFetching, setIsFetching] = useState(true);
-    const { addBook } = useCarts();
-    const [bookDetail, setBookDetail] = useState<BookDetail | null>(null);
-    const fetchBookDetail = async (id: string | undefined) => {
-        console.info('Fetch book detail');
-        try {
-            setIsFetching(true);
-            const response = await axios.get<BookDetail>(`${apiConfig.baseURL}/api/books/getBookInfo/${id}`);
-            if (response?.status === 200) {
-                setBookDetail(response.data);
-            }
-        } catch (error) {
-            console.log('Error fetch book info', error);
-        }
-        setIsFetching(false);
+    const { book, isLoading, fetchBookDetail } = useBookDetail(bookId);
+    const { addBook, carts } = useCart();
+    const toast = useToast();
 
+    const handleAddToCart = () => {
+        if (book) {
+            if (book.status === 'ACTIVE' || book.status === 'OFFLINE_ONLY') {
+                const isAlreadyInCart = carts?.some(item => item.id === book.id);
+                if (isAlreadyInCart) {
+                     toast.show({ description: "Sách này đã có trong giỏ mượn.", placement: 'top' });
+                } else {
+                    addBook(book);
+                    toast.show({ description: "Đã thêm vào giỏ mượn.", placement: 'top' });
+                }
+            } else {
+                toast.show({ description: "Sách này hiện không có sẵn.", placement: 'top' });
+            }
+        }
     };
 
-    useEffect(() => {
-        async function fetchDetails() {
-            if (bookId) { await fetchBookDetail(bookId); }
-        }
-        if (isFetching) { fetchDetails(); }
-    }, [bookId]);
-
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true);
-        try {
-            await fetchBookDetail(bookId);
-        } catch (error) {
-            console.info('Error refreshing:', error);
-        } finally {
-            setRefreshing(false);
-        }
-    }, []);
-
-    if (isFetching && !bookDetail) {
-        return (<ScrollView>
-            <VStack space={5} padding={3} minH={'100%'}>
-                <Center>
-                    <Skeleton size='64' />
-                </Center>
-                <Skeleton.Text fontSize={'lg'} textAlign={'center'} />
-            </VStack>
-        </ScrollView>
-        );
-    }
-
-
-    function InformationRow({ label, content }: InformationRowProps) {
+    if (isLoading && !book) {
         return (
-            <HStack minHeight={14}>
-                <Box justifyContent={'start'} borderColor={'coolGray.300'} borderWidth={'0.5'} w={'30%'} p={3}>
-                    <Text fontWeight={300} fontSize={'xs'}>{label}</Text>
-                </Box>
-                <Box justifyContent={'start'} borderColor={'coolGray.300'} borderWidth={'0.5'} flex={1} p={3}>
-                    {Array.isArray(content) ? (
-                        content.map((item, index) => (
-                            <Button size="md" justifyContent={'start'} p={0}
-                                key={index} variant="link"
-                                _text={
-                                    { color: 'info', fontSize: 'xs', fontWeight: '400' }
-                                }
-                                onPress={() => {
-                                    if (label == 'Thể loại' && item.id) {
-                                        navigation.navigate('BookList', { categoryId: item.id, categoryName: item.name });
-                                    } if (label == 'Tác giả' && item.id) {
-                                        navigation.navigate('BookList', { authorId: item.id, authorName: item.name });
-                                    } else {
-
-                                    }
-                                }}
-                            >
-                                {content.length > 1 && index != content.length - 1 ? item.name + ',' : item.name}
-                            </Button>
-                        ))
-                    ) : (
-                        <Text fontWeight={300} fontSize={'xs'}>{content}</Text>
-                    )}
-                </Box>
-            </HStack >
+            <Box flex={1} bg="white">
+                <Center flex={1}><Spinner size="lg" /></Center>
+            </Box>
         );
     }
 
-
-
+    if (!book) {
+        return (
+            <Box flex={1} bg="white">
+                <Center flex={1}><Text>Không tìm thấy thông tin sách.</Text></Center>
+            </Box>
+        );
+    }
+    
+    const isBookAvailable = book.status === 'ACTIVE' || book.status === 'OFFLINE_ONLY';
+    const isBookInCart = carts?.some(item => item.id === book.id);
 
     return (
-        <BookProvider>
-            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-                <VStack space={5} padding={3} >
-                    <Center>
-                        <Image
-                            source={{ uri: bookDetail?.image }}
-                            resizeMode="contain"
-                            alt='Book Image'
-                            size='64'
-                        />
+        <Box flex={1} bg="white">
+            <ScrollView
+                contentContainerStyle={{ paddingBottom: 120 }}
+                refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchBookDetail} />}
+            >
+                <VStack>
+                    <Center bg="coolGray.100" p={4}>
+                        <Image source={{ uri: book.image }} alt={book.title} size="2xl" resizeMode="contain" />
                     </Center>
+                    <VStack p={4} space={2}>
+                        <Heading size="lg">{book.title}</Heading>
+                        <Text fontSize="md" color="coolGray.600">{book.author.map(a => a.name).join(', ')}</Text>
+                        <HStack space={2} flexWrap="wrap">
+                            {book.category.map(c => <Badge key={c.id} colorScheme="info" variant="outline">{c.name}</Badge>)}
+                        </HStack>
+                    </VStack>
 
-                    <Heading fontSize={'lg'} textAlign={'center'}>{bookDetail?.title}</Heading>
-                    <Box>
-                        <InformationRow label="Tác giả" content={bookDetail?.author || []} />
-                        <InformationRow label="Thể loại" content={bookDetail?.category || []} />
-                        <InformationRow label="Mô tả" content={bookDetail?.description || ''} />
-                        <InformationRow label="Nhà xuất bản" content={bookDetail?.publisher || ''} />
-                        <InformationRow label="Năm xuất bản" content={bookDetail?.publicationYear || ''} />
-                        <InformationRow label="Kích thước" content={bookDetail?.format || ''} />
-                        <InformationRow label="ISBN" content={bookDetail?.isbn || ''} />
-                        <InformationRow label="Tình trạng" content={bookDetail?.status || ''} />
-                    </Box>
+                    <VStack px={4} space={1}>
+                        <InfoRow label="Nhà xuất bản" value={book.publisher} />
+                        <InfoRow label="Năm xuất bản" value={book.publicationYear.toString()} />
+                        <InfoRow label="Mã ISBN" value={book.isbn} />
+                        <InfoRow label="Trạng thái" value={book.status} />
+                    </VStack>
+                    
+                    <VStack p={4} space={2}>
+                        <Heading size="md">Tóm tắt</Heading>
+                        <Text textAlign="justify">{book.description}</Text>
+                    </VStack>
                 </VStack>
-            </ScrollView >
-            <HStack justifyContent={'center'} position={'fixed'} bottom={0} height={16} >
-
-                {bookDetail?.status == "ACTIVE"
-                    &&
-                    <Button flex={1} borderRadius={0} onPress={() => navigation.navigate('BorrowRequest', { selectedBookIds: [bookId], selectDate: null, dueDate: null })} >
-                        Đăng kí mượn
-                    </Button>
-                }
-                <Button flex={1} variant={'subtle'} borderRadius={0} onPress={() => bookDetail ? addBook(bookDetail) : ''}>
-                    Thêm vào giỏ sách
+            </ScrollView>
+            <Box position="absolute" bottom={0} left={0} right={0} p={4} bg="white" borderTopWidth={1} borderColor="coolGray.200">
+                <Button 
+                    onPress={handleAddToCart} 
+                    isDisabled={!isBookAvailable || isBookInCart}
+                    colorScheme={!isBookAvailable ? 'coolGray' : 'primary'}
+                >
+                    {isBookInCart ? 'Đã có trong giỏ' : (isBookAvailable ? 'Thêm vào giỏ mượn' : 'Không có sẵn')}
                 </Button>
-            </HStack>
-        </BookProvider >
-
+            </Box>
+        </Box>
     );
 }
-
-type ContentInput = {
-    id: string | null;
-    name: string;
-};
-type InformationRowProps = {
-    label: string;
-    content: string | ContentInput[];
-};

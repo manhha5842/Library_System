@@ -1,19 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Pressable, Image, Center, Text } from 'native-base';
-import { NavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 import { RootStackParamList } from '../constants/navigationTypes';
-import { CartProvider, useCarts } from '../context/CartContext';
+import { useCart } from '../context/CartContext';
 
-type BackButtonProps = {
-    navigation: NavigationProp<RootStackParamList>;
-};
+// Props không còn cần thiết
+type CartButtonProps = {};
 
-export default function BackButton({ navigation }: BackButtonProps) {
-    const { carts, unavailableBooks } = useCarts();
+type NavigationHookProp = StackNavigationProp<RootStackParamList>;
+
+// Đổi tên component thành CartButton
+export default function CartButton({}: CartButtonProps) {
+    // Sử dụng hook useNavigation
+    const navigation = useNavigation<NavigationHookProp>();
+    const { carts } = useCart();
+    
+    // Tính toán tổng số sách trong giỏ
+    const totalItems = carts?.length || 0;
+
     return (
         <Box>
-            <Pressable onPress={() => navigation.navigate('Cart', { isDefault: false })} p={3} mt={1}>
+            {/* Sửa lại điều hướng cho đơn giản và chính xác */}
+            <Pressable onPress={() => navigation.navigate('Cart')} p={3} mt={1}>
                 {({ isPressed }) => (
                     <Box>
                         <Image
@@ -22,7 +32,9 @@ export default function BackButton({ navigation }: BackButtonProps) {
                             size='8'
                             style={{ transform: [{ scale: isPressed ? 0.7 : 1 }] }}
                         />
-                        <Center
+                        {/* Chỉ hiển thị số lượng khi có sách trong giỏ */}
+                        {totalItems > 0 && (
+                            <Center
                             bg={'red.500'}
                             size='4'
                             borderRadius={5}
@@ -30,11 +42,12 @@ export default function BackButton({ navigation }: BackButtonProps) {
                             right={-6}
                             top={-2}
                             style={{ transform: [{ scale: isPressed ? 0.7 : 1 }] }}
-                        >
-                            <Text color={'white'} fontSize={12}>
-                                {carts != null && unavailableBooks != null ? carts.length + unavailableBooks.length : 0}
-                            </Text>
-                        </Center>
+                            >
+                                <Text color={'white'} fontSize={12} >
+                                    {totalItems}
+                                </Text>
+                            </Center>
+                        )}
                     </Box>
                 )}
             </Pressable>

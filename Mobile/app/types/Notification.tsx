@@ -1,10 +1,9 @@
 export type Notification = {
     id: string;
     title: string;
-    body: string;
-    data: string;
+    message: string;
+    isRead: boolean;
     type: string;
-    status: string;
     createdAt: string;
     updatedAt: string;
 };

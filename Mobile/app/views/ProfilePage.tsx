@@ -1,38 +1,45 @@
-import { Badge, Box, Button, Center, Divider, Heading, HStack, Image, ScrollView, Stack, VStack } from 'native-base';
+import { Badge, Box, Button, Center, Divider, Heading, HStack, Image, ScrollView, Stack, VStack, Text } from 'native-base';
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../context/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../constants';
+import { mockUser } from '../types/mockData';
+
 type ProfilePageNavigationProp = StackNavigationProp<
     RootStackParamList,
     'ProfilePage'
 >;
-export default function ProfilePage() {
+
+const ProfilePage: React.FC = () => {
     const { user, logout } = useUser();
     const navigation = useNavigation<ProfilePageNavigationProp>();
-    const onLogout = () => {
+
+    const displayUser = user || mockUser;
+
+    const handleLogout = () => {
         logout();
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'Intro' as never }],
-        });
-    }
+    };
 
     return (
         <ScrollView>
+            <VStack space={4} alignItems="center" py={8}>
+                <Image 
+                    source={require('../assets/avatar.png')} 
+                    alt="Avatar" 
+                    size="xl" 
+                    borderRadius="full" 
+                />
+                <VStack space={1} alignItems="center">
+                    <Text fontSize="2xl" fontWeight="bold">
+                        {displayUser.name}
+                    </Text>
+                    <Text fontSize="md" color="gray.500">
+                        {displayUser.email}
+                    </Text>
+                </VStack>
+            </VStack>
             <Stack direction={"column"} safeArea>
-                <Center >
-                    <Image source={require('../assets/avatar.png')}
-                        resizeMode="cover" alt='Avatar Image' size='72' w={'100%'} />
-                    <Heading>
-                        {user?.name}
-                    </Heading>
-                    <Divider bg="indigo.500" thickness="2" my={2} w={40} orientation="horizontal" />
-                    <Badge colorScheme={'lightBlue'}>
-                        {user?.id}
-                    </Badge>
-                </Center>
                 <VStack p={3} space={3}>
                     <Button
                         w={'100%'} size={'sm'} variant={'ghost'} bg={'white'} py={3}
@@ -66,7 +73,7 @@ export default function ProfilePage() {
                         _text={{ fontWeight: "500", fontSize: '14' }}
                         colorScheme={'danger'} justifyContent={'left'} fontWeight={700} shadow={5} borderRadius={15}
                         leftIcon={<Image source={require('../assets/icons/logout-icon.png')} alt='Icon Image' size="xs" />}
-                        onPress={onLogout}>
+                        onPress={handleLogout}>
                         Đăng xuất
                     </Button>
                 </VStack>
@@ -75,4 +82,6 @@ export default function ProfilePage() {
         </ScrollView>
     );
 }
+
+export default ProfilePage;
 

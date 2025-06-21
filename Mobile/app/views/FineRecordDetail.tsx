@@ -3,24 +3,25 @@ import { RefreshControl } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Text, HStack, VStack, ScrollView, Center, Divider, Spinner, Skeleton, Flex, Button, Heading, Badge, ZStack } from "native-base";
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import api from '../config/apiConfig';
 import { useUser } from '../context/UserContext';
 import { RootStackParamList } from '../constants';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BorrowRecordDetail, FineRecord, RenewalRecord } from '../types';
 import CustomAlertDialog from '../components/AlertDialog';
+import { mockBorrowRecordDetails } from '../types/mockData';
 
-type BorrowRecordDetailNavigationProp = StackNavigationProp<
+type FineRecordDetailNavigationProp = StackNavigationProp<
     RootStackParamList,
-    'BorrowRecordDetailPage'
+    'FineRecordDetail'
 >;
 
-type BorrowRecordDetailRouteProp = RouteProp<RootStackParamList, 'BorrowRecordDetailPage'>;
+type FineRecordDetailRouteProp = RouteProp<RootStackParamList, 'FineRecordDetail'>;
 
-export default function BorrowRecordDetailPage() {
-    const navigation = useNavigation<BorrowRecordDetailNavigationProp>();
+export default function FineRecordDetailPage() {
+    const navigation = useNavigation<FineRecordDetailNavigationProp>();
     const { user } = useUser();
-    const route = useRoute<BorrowRecordDetailRouteProp>();
+    const route = useRoute<FineRecordDetailRouteProp>();
     const { borrowRecordId } = route.params;
     const [isLoading, setIsLoading] = useState(false);
     const [borrowRecordDetail, setBorrowRecordDetail] = useState<BorrowRecordDetail | null>(null);
@@ -30,7 +31,7 @@ export default function BorrowRecordDetailPage() {
     const [isPending, setIsPending] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const totalUnpaidAmount = borrowRecordDetail?.fineRecords.reduce((total, fineRecord) => {
-        return total + fineRecord.fineAmount;
+            return total + fineRecord.amount;
     }, 0);
     const fetchBorrowRecordDetail = async (id: string | undefined) => {
         if (isLoading || borrowRecordDetail != null) {
@@ -38,12 +39,14 @@ export default function BorrowRecordDetailPage() {
         } else {
             try {
                 setIsLoading(true);
-                const response = await axios.get<BorrowRecordDetail>(`${apiConfig.baseURL}/api/request/getBorrowRecord/${id}`);
+                const response = await api.get<BorrowRecordDetail>(`/request/getBorrowRecord/${id}`);
                 if (response?.status === 200) {
                     setBorrowRecordDetail(response.data);
                 }
             } catch (error) {
                 console.info('Error fetch borrow record info', error);
+                const mock = mockBorrowRecordDetails.find(b => b.id === id);
+                if (mock) setBorrowRecordDetail(mock);
             }
             setIsLoading(false);
         }
@@ -127,14 +130,12 @@ export default function BorrowRecordDetailPage() {
                                             <Text fontWeight={500} fontSize={16}>Phiếu phạt {index + 1}</Text>
                                             <Text fontWeight={600} colorScheme={type}>{label}</Text>
                                         </HStack>
-                                        <Text>Lý do phạt: {fineRecord.fineReason}</Text>
-                                        {fineRecord.books && <Text mb={3}>Sản phẩm có vấn đề: {fineRecord.books.title}</Text>}
+                                        <Text>Lý do phạt: {fineRecord.reason}</Text>
 
                                         <Text>Ngày phạt: <Text fontWeight={800} colorScheme={type}>{formatDate(fineRecord.fineDate)}</Text></Text>
-                                        <Text>Hạn thanh toán:  <Text fontWeight={800} colorScheme={type}>{formatDate(fineRecord.dueDate)}</Text></Text>
-                                        {fineRecord.paymentDate && <Text>Ngày thanh toán: {fineRecord.paymentDate ? fineRecord.paymentDate : 'Chưa thanh toán'}</Text>}
-                                        <Text>Tạo vào lúc: {fineRecord.createdAt}</Text>
-                                        <Text fontSize={14}>Số tiền phạt: {formatCurrency(fineRecord.fineAmount)}</Text>
+                                        {fineRecord.paymentDate && <Text>Ngày thanh toán: {fineRecord.paymentDate ? formatDate(fineRecord.paymentDate) : 'Chưa thanh toán'}</Text>}
+                                        <Text>Tạo vào lúc: {formatDate(fineRecord.createdAt)}</Text>
+                                        <Text fontSize={14}>Số tiền phạt: {formatCurrency(fineRecord.amount)}</Text>
                                     </Box>
                                 );
                             })}

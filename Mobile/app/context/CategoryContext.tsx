@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import api from '../config/apiConfig'; 
 import { Category, CategoryGroup } from '../types'
 
 interface CategoryContextType {
@@ -28,41 +28,44 @@ export const CategoryProvider: React.FC<CategoryProviderProps> = ({ children }) 
     const [category, setCategory] = useState<Category | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [categoryGroup, setCategoryGroup] = useState<CategoryGroup[]>([]);
-
+    const [isFetching, setIsFetching] = useState(false);
 
     const fetchCategories = async () => {
-        console.info("Fetching categories");
+        if (isFetching) {
+            return;
+        }
+        setIsFetching(true);
         try {
-            const response = await axios.get<Category[]>(`${apiConfig.baseURL}/api/categories/getAll`);
-            if (response.status === 200) {
-                const sortedCategories: Category[] = response.data.sort((a, b) => a.name.localeCompare(b.name));
-                setCategories(sortedCategories);
-
-                const groups = sortedCategories.reduce<{ [key: string]: Category[] }>((acc, category) => {
-                    const firstLetter = category.name[0].toUpperCase();
+            const response = await api.get<Category[]>(`/categories/getAll`);
+            if (response?.status === 200) {
+                const groupedData = response.data.reduce((acc: { [key: string]: Category[] }, item: Category) => {
+                    const firstLetter = item.name.charAt(0).toUpperCase();
                     if (!acc[firstLetter]) {
                         acc[firstLetter] = [];
                     }
-                    acc[firstLetter].push(category);
+                    acc[firstLetter].push(item);
                     return acc;
                 }, {});
 
-                const categoryGroups = Object.keys(groups).map(key => ({
+                const sectionedData = Object.keys(groupedData).map(key => ({
                     title: key,
-                    data: groups[key]
+                    data: groupedData[key],
                 }));
-
-                setCategoryGroup(categoryGroups);
+                setCategories(response.data);
+                setCategoryGroup(sectionedData);
             }
         } catch (error) {
-            console.info('Error fetching categories:', error);
+            console.log('Error fetching categories', error);
+            throw error;
+        } finally {
+            setIsFetching(false);
         }
     };
     const fetchCategoryById = async (id: string) => {
         console.info("Fetching category", id);
         try {
             if (id) {
-                const response = await axios.get<Category>(`${apiConfig.baseURL}/api/categories/getCategoriesById/${id}`);
+                const response = await api.get<Category>(`/categories/getCategoriesById/${id}`);
                 if (response?.status === 200) {
                     setCategory(response.data);
                 }

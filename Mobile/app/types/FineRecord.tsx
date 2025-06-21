@@ -1,13 +1,12 @@
-import { BookView } from "./BookView";
+import { FineRecordStatus } from "./enums";
 
 export type FineRecord = {
     id: string;
-    books: BookView;
-    fineReason: string;
-    fineAmount: number;
+    borrowRecordId: string;
+    amount: number;
+    reason: string;
     fineDate: string;
-    dueDate: string;
     paymentDate: string | null;
-    status: string;
+    status: FineRecordStatus;
     createdAt: string;
 };

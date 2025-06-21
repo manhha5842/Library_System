@@ -1,5 +1,5 @@
 import * as Font from "expo-font"
-import { StyleSheet, ActivityIndicator, View } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, LogBox } from 'react-native';
 import { useState, useEffect } from 'react';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -17,10 +17,22 @@ import { CartProvider } from "./app/context/CartContext";
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
+const defaultHeaderOptions: any = {
+  headerShown: true,
+  headerTransparent: false,
+  headerTitle: '',
+  headerLeft: () => <BackButton />,
+};
+
+LogBox.ignoreAllLogs();
+
 const originalWarn = console.warn;
 
 console.warn = (message, ...args) => {
-  if (typeof message === 'string' && message.includes('Support for defaultProps will be removed from memo components')) {
+  if (
+    (typeof message === 'string' && message.includes('Support for defaultProps will be removed from memo components')) ||
+    (typeof message === 'string' && message.includes('In React 18, SSRProvider is not necessary and is a noop'))
+  ) {
     return;
   }
   originalWarn(message, ...args);
@@ -99,146 +111,92 @@ function AppContent() {
         <Stack.Screen
           name="Cart"
           component={Screen.CartPage}
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerStyle: { height: 60 },
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}
+          options={{
+            ...defaultHeaderOptions,
+          }}
         />
         <Stack.Screen
           name="BorrowRequest"
           component={Screen.BorrowRequest}
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerStyle: { height: 60 },
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}
+          options={{
+            ...defaultHeaderOptions,
+          }}
         />
         <Stack.Screen
           name="BookList"
           component={Screen.BookList}
           options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerStyle: { height: 60 },
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-            headerRight: () => (
-              <CartButton navigation={navigation} />
-            ),
+            ...defaultHeaderOptions,
+            headerRight: () => <CartButton />,
           })}
         />
         <Stack.Screen
           name="BookListSearch"
           component={Screen.BookListSearch}
           options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerStyle: { height: 60 },
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-            headerRight: () => (
-              <CartButton navigation={navigation} />
-            ),
+            ...defaultHeaderOptions,
+            headerRight: () => <CartButton />,
           })}
         />
         <Stack.Screen
           name="BookDetail"
           component={Screen.BookDetailPage}
           options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerStyle: { height: 60 },
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-            headerRight: () => (
-              <CartButton navigation={navigation} />
-            ),
+            ...defaultHeaderOptions,
+            headerRight: () => <CartButton />,
           })}
         />
         <Stack.Screen
           name="Category"
           component={Screen.Category}
           options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-
-            headerRight: () => (
-              <CartButton navigation={navigation} />
-            ),
+            ...defaultHeaderOptions,
+            headerRight: () => <CartButton />,
           })}
         />
         <Stack.Screen
           name="RenewalRequestPage"
           component={Screen.RenewalRequestPage}
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}
+          options={{
+            ...defaultHeaderOptions,
+          }}
         />
         <Stack.Screen
           name="HistoryBorrowRecord"
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}        >
+          options={{
+            ...defaultHeaderOptions,
+          }}
+        >
           {() => (
             <Screen.HistoryBorrowRecord />
           )}
         </Stack.Screen>
         <Stack.Screen
           name="BorrowRecordDetailPage"
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}        >
+          options={{
+            ...defaultHeaderOptions,
+          }}
+        >
           {() => (
             <Screen.BorrowRecordDetailPage />
           )}
         </Stack.Screen>
         <Stack.Screen
           name="FineRecordDetail"
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}        >
+          options={{
+            ...defaultHeaderOptions,
+          }}
+        >
           {() => (
             <Screen.FineRecordDetail />
           )}
         </Stack.Screen>
         <Stack.Screen
           name="FeedbackPage"
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}        >
+          options={{
+            ...defaultHeaderOptions,
+          }}
+        >
           {() => (
             <Screen.FeedbackPage />
           )}
@@ -246,35 +204,23 @@ function AppContent() {
         <Stack.Screen
           name="HistoryFeedback"
           component={Screen.HistoryFeedback}
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}
+          options={{
+            ...defaultHeaderOptions,
+          }}
         />
         <Stack.Screen
           name="HistoryFineRecord"
           component={Screen.HistoryFineRecord}
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}
+          options={{
+            ...defaultHeaderOptions,
+          }}
         />
         <Stack.Screen
           name="FeedbackDetail"
           component={Screen.FeedbackDetail}
-          options={({ navigation }) => ({
-            headerShown: true,
-            headerTitle: '',
-            headerLeft: () => (
-              <BackButton navigation={navigation} />
-            ),
-          })}
+          options={{
+            ...defaultHeaderOptions,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
