@@ -1,25 +1,27 @@
 import { Box, Text, HStack, VStack, Heading, Button, Image, Input, Pressable, Icon, Checkbox, Link, ScrollView } from "native-base";
 import React, { useRef, useState } from "react";
-import { Animated } from 'react-native';
+import { Animated, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Formik } from "formik";
 import { AntDesign } from '@expo/vector-icons';
 import api from "../config/apiConfig";
 import axios from "axios";
+import * as Yup from 'yup';
 
 import { RootStackParamList } from "../constants";
 import { useUser } from '../context/UserContext';
 import { User } from "../types";
 
-type IntroPageNavigationProp = StackNavigationProp<RootStackParamList, 'Intro'>;
 
 export default function IntroPage() {
     const { login } = useUser();
     const [isLoading, setIsLoading] = useState(false);
+    const [loginError, setLoginError] = useState('');
 
-    const handleSignIn = async (values: any) => {
+    const handleSignIn = async (values: any, { setSubmitting }: any) => {
         setIsLoading(true);
+        setLoginError('');
         if (values.email === 'abc@xyz.com' && values.password === '123456') {
             const mockUserData: User = {
                 id: 'SV001',
@@ -40,53 +42,46 @@ export default function IntroPage() {
                     const userWithToken: User = { ...userData, token };
                     await login(userWithToken);
                 } else {
-                    console.error("Login failed with status: ", response.status);
+                    setLoginError('Sai tài khoản hoặc mật khẩu.');
                 }
             } catch (error) {
-                console.error('An error occurred during sign-in:', error);
+                setLoginError('Sai tài khoản hoặc mật khẩu.');
             }
         }
-       
         setIsLoading(false);
-    };
-
-    const Slides = () => {
-        return (
-            <VStack space={5} alignItems="center" >
-                <Image source={require('../assets/LibraryIntro.jpg')}
-                    resizeMode="cover" alt='Intro Image' size='2xl' w={'100%'} />
-                <VStack space={2} w="80%">
-                    <Heading size="lg">Hệ thống thư viện</Heading>
-                    <Text>
-                        Hệ thống thư viện cho phép sinh viên mượn và trả sách một cách dễ dàng và thuận tiện.
-                    </Text>
-                </VStack>
-            </VStack>
-        )
+        setSubmitting(false);
     };
 
     const SignInForm = () => {
         const [show, setShow] = useState(false);
-    return (
+        return (
             <VStack space={5} w={'100%'} >
-                <Heading >
+                <Heading color={'#fff'}>
                     ĐĂNG NHẬP
                 </Heading>
                 <Formik
                     initialValues={{ email: '', password: '' }}
-                    onSubmit={values => handleSignIn(values)}
+                    validationSchema={Yup.object({
+                        email: Yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
+                        password: Yup.string().required('Vui lòng nhập mật khẩu'),
+                    })}
+                    onSubmit={handleSignIn}
                 >
-                    {({ handleChange, handleBlur, handleSubmit, values }) => (
+                    {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isSubmitting }) => (
                         <VStack space={3}>
-                                <Input
+                            <Input
                                 onChangeText={handleChange('email')}
                                 onBlur={handleBlur('email')}
                                 value={values.email}
                                 placeholder="Email"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
-                                    />
-                                    <Input
+                                isInvalid={!!(touched.email && errors.email)}
+                            />
+                            {touched.email && errors.email && (
+                                <Text color="red.400" fontSize="xs">{String(errors.email)}</Text>
+                            )}
+                            <Input
                                 onChangeText={handleChange('password')}
                                 onBlur={handleBlur('password')}
                                 value={values.password}
@@ -95,16 +90,20 @@ export default function IntroPage() {
                                 InputRightElement={<Pressable onPress={() => setShow(!show)}>
                                     <Icon as={<AntDesign name={show ? "eye" : "eyeo"} />} size={5} mr="2" color="muted.400" />
                                 </Pressable>}
+                                isInvalid={!!(touched.password && errors.password)}
                             />
+                            {touched.password && errors.password && (
+                                <Text color="red.400" fontSize="xs">{String(errors.password)}</Text>
+                            )}
+                            {loginError && (
+                                <Text color="red.400" fontSize="xs">{loginError}</Text>
+                            )}
                             <HStack justifyContent="space-between">
-                                <Checkbox value="remember" accessibilityLabel="Remember me">
-                                    Ghi nhớ tôi
-                                </Checkbox>
-                                <Link isExternal href="#" _text={{ color: "info.500" }}>Quên mật khẩu?</Link>
-                                </HStack>
-                            <Button isLoading={isLoading} onPress={() => handleSubmit()} colorScheme="indigo">
-                                        Đăng nhập
-                                    </Button>
+                                <Link isExternal href="#" _text={{ color: "info.800" }}>Quên mật khẩu?</Link>
+                            </HStack>
+                            <Button isLoading={isLoading || isSubmitting} onPress={() => handleSubmit()} colorScheme="indigo">
+                                Đăng nhập
+                            </Button>
                         </VStack>
                     )}
                 </Formik>
@@ -113,11 +112,17 @@ export default function IntroPage() {
     }
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }} p={5}>
-            <VStack space={8} alignItems="center">
-                <Slides />
-                <SignInForm />
-                    </VStack>
-        </ScrollView>
+        <Box flex={1} >
+            <ImageBackground
+                source={require('../assets/LibraryIntro.jpg')}
+                style={{ flex: 1, position: 'absolute', width: '100%', height: '100%' }}
+                resizeMode="cover"
+            />
+            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }} p={30}>
+                <VStack space={8} alignItems="center" style={{ position: 'relative', zIndex: 1 }}>
+                    <SignInForm />
+                </VStack>
+            </ScrollView>
+        </Box>
     );
 }

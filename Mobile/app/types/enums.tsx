@@ -23,4 +23,10 @@ export enum CopyStatus {
     AVAILABLE = 'AVAILABLE',
     INACTIVE = 'INACTIVE',
     OFFLINE_ONLY = 'OFFLINE_ONLY',
-} 
+}
+export enum ReturnRecordStatus {
+    RETURNED = 'RETURNED',
+    PENDING = 'PENDING',
+    LOST = 'LOST',
+    DAMAGE = 'DAMAGE',
+}

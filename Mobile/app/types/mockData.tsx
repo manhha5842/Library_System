@@ -12,7 +12,7 @@ import { BookDetail } from './BookDetail';
 import { BookView } from './BookView';
 import { FineRecordView } from './FineRecordView';
 import { BorrowRecordDetail } from './BorrowRecordDetail';
-import { FeedbackStatus, FineRecordStatus } from './enums'; 
+import { FeedbackStatus, FineRecordStatus, ReturnRecordStatus } from './enums';
 
 
 export const mockAuthors: Author[] = [
@@ -24,38 +24,38 @@ export const mockAuthors: Author[] = [
 ];
 
 export const mockCategories: Category[] = [
-    { id: '1', name: 'Văn học Việt Nam' },
-    { id: '2', name: 'Kỹ năng sống' },
-    { id: '3', name: 'Tiểu thuyết' },
-    { id: '4', name: 'Lịch sử' },
-    { id: '5', name: 'Kinh tế' },
-    { id: '6', name: 'Khoa học' },
-    { id: '7', name: 'Công nghệ thông tin' },
+  { id: '1', name: 'Văn học Việt Nam' },
+  { id: '2', name: 'Kỹ năng sống' },
+  { id: '3', name: 'Tiểu thuyết' },
+  { id: '4', name: 'Lịch sử' },
+  { id: '5', name: 'Kinh tế' },
+  { id: '6', name: 'Khoa học' },
+  { id: '7', name: 'Công nghệ thông tin' },
 ];
 
 export const mockCategoryGroups: CategoryGroup[] = [
-    {
-        title: 'Văn học',
-        data: [
-            { id: '1', name: 'Văn học Việt Nam' },
-            { id: '3', name: 'Tiểu thuyết' },
-        ],
-    },
-    {
-        title: 'Khoa học & Đời sống',
-        data: [
-            { id: '2', name: 'Kỹ năng sống' },
-            { id: '4', name: 'Lịch sử' },
-            { id: '5', name: 'Kinh tế' },
-            { id: '6', name: 'Khoa học' },
-        ],
-    },
-     {
-        title: 'Công nghệ',
-        data: [
-            { id: '7', name: 'Công nghệ thông tin' },
-        ],
-    },
+  {
+    title: 'Văn học',
+    data: [
+      { id: '1', name: 'Văn học Việt Nam' },
+      { id: '3', name: 'Tiểu thuyết' },
+    ],
+  },
+  {
+    title: 'Khoa học & Đời sống',
+    data: [
+      { id: '2', name: 'Kỹ năng sống' },
+      { id: '4', name: 'Lịch sử' },
+      { id: '5', name: 'Kinh tế' },
+      { id: '6', name: 'Khoa học' },
+    ],
+  },
+  {
+    title: 'Công nghệ',
+    data: [
+      { id: '7', name: 'Công nghệ thông tin' },
+    ],
+  },
 ];
 
 export const mockBooks: Book[] = [
@@ -75,7 +75,7 @@ export const mockBooks: Book[] = [
     image: 'https://picsum.photos/seed/book2/200/300',
     status: 'borrowed',
   },
-    {
+  {
     id: '3',
     title: 'Harry Potter và Hòn đá Phù thủy',
     author: [mockAuthors[2]],
@@ -91,7 +91,7 @@ export const mockBooks: Book[] = [
     image: 'https://picsum.photos/seed/book4/200/300',
     status: 'reserved',
   },
-    {
+  {
     id: '5',
     title: 'Nghĩ giàu và làm giàu',
     author: [mockAuthors[4]],
@@ -130,7 +130,7 @@ export const mockNotifications: Notification[] = [
   {
     id: '3',
     title: 'Sách mới đã về!',
-      message: 'Thư viện vừa nhập về nhiều đầu sách mới thuộc thể loại Khoa học, mời bạn ghé xem.',
+    message: 'Thư viện vừa nhập về nhiều đầu sách mới thuộc thể loại Khoa học, mời bạn ghé xem.',
     type: 'news',
     isRead: false,
     createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
@@ -168,20 +168,20 @@ export const mockFeedbacks: Feedback[] = [
 ];
 
 export const mockBookViews: BookView[] = mockBooks.map(book => ({
-    id: book.id,
-    title: book.title,
-    author: book.author.map(a => a.name),
-    image: book.image,
+  id: book.id,
+  title: book.title,
+  author: book.author.map(a => a.name),
+  image: book.image,
 }));
 
 
 export const mockFineRecords: FineRecord[] = [
   {
     id: '1',
+    borrowRecordId: '1',
     reason: 'Trả sách trễ 2 ngày',
-    fineAmount: 10000,
+    amount: 10000,
     fineDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    dueDate: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
     paymentDate: null,
     status: FineRecordStatus.PAID,
     createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
@@ -214,7 +214,7 @@ export const mockRenewalRecords: RenewalRecord[] = [
 
 
 export const mockBorrowRecords: BorrowRecord[] = [
-    {
+  {
     id: '1',
     borrowDate: new Date(Date.now() - 50 * 24 * 60 * 60 * 1000).toISOString(),
     dueDate: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
@@ -238,7 +238,7 @@ export const mockBorrowRecords: BorrowRecord[] = [
     books: [mockBookViews[4]],
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
   },
-    {
+  {
     id: '4',
     borrowDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
     dueDate: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
@@ -246,7 +246,7 @@ export const mockBorrowRecords: BorrowRecord[] = [
     books: [mockBookViews[3]],
     createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
   },
-    {
+  {
     id: '5',
     borrowDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
     dueDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString(),
@@ -257,19 +257,19 @@ export const mockBorrowRecords: BorrowRecord[] = [
 ];
 
 export const mockBookDetails: BookDetail[] = mockBooks.map(book => ({
-    ...book,
-    description: `Đây là mô tả chi tiết cho sách "${book.title}". Sách thuộc thể loại ${book.category.map(c=>c.name).join(', ')} và được viết bởi tác giả ${book.author.map(a=>a.name).join(', ')}.`,
-    publicationYear: (2024 - parseInt(book.id)).toString(),
-    publisher: 'Nhà xuất bản Mẫu',
-    language: 'Tiếng Việt',
-    isbn: `978-604-0-${Math.floor(Math.random() * 90000) + 10000}`,
-    format: 'Bìa mềm',
-    price: `${Math.floor(Math.random() * 100 + 50)}000`,
+  ...book,
+  description: `Đây là mô tả chi tiết cho sách "${book.title}". Sách thuộc thể loại ${book.category.map(c => c.name).join(', ')} và được viết bởi tác giả ${book.author.map(a => a.name).join(', ')}.`,
+  publicationYear: (2024 - parseInt(book.id)).toString(),
+  publisher: 'Nhà xuất bản Mẫu',
+  language: 'Tiếng Việt',
+  isbn: `978-604-0-${Math.floor(Math.random() * 90000) + 10000}`,
+  format: 'Bìa mềm',
+  price: `${Math.floor(Math.random() * 100 + 50)}000`,
 }));
 
 
 export const mockFineRecordViews: FineRecordView[] = [
-    {
+  {
     id: '4',
     borrowDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
     dueDate: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
@@ -283,10 +283,10 @@ export const mockFineRecordViews: FineRecordView[] = [
 
 
 export const mockBorrowRecordDetails: BorrowRecordDetail[] = mockBorrowRecords.map(br => ({
-    ...br,
-    note: 'Ghi chú mẫu cho đơn mượn sách.',
-    cancelReason: br.status === 'RETURNED' ? 'Sinh viên không đến nhận sách.' : null,
-    returnRecords: br.status === 'RETURNED' ? mockReturnRecords : [],
-    renewalRecords: br.id === '2' ? mockRenewalRecords : [],
-    fineRecords: br.status === 'RETURNED' ? mockFineRecords : [],
+  ...br,
+  note: 'Ghi chú mẫu cho đơn mượn sách.',
+  cancelReason: br.status === 'RETURNED' ? 'Sinh viên không đến nhận sách.' : null,
+  returnRecords: br.status === 'RETURNED' ? mockReturnRecords : [],
+  renewalRecords: br.id === '2' ? mockRenewalRecords : [],
+  fineRecords: br.status === 'RETURNED' ? mockFineRecords : [],
 })); 
