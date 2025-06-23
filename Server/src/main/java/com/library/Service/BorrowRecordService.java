@@ -249,7 +249,7 @@ public class BorrowRecordService {
                         fineRecord.setBook(book);
                         fineRecord.setDueDate(null);
                         fineRecord.setStatus(FineRecordStatus.PENDING);
-                        fineRecord.setFineReason(Reason.LOST_OVEVERDUE);
+                        fineRecord.setFineReason(Reason.LOST_OVERDUE);
                         fineRecordService.saveOrUpdateFineRecord(fineRecord);
                         historyRecordService.saveHistory(borrowedRecord, "Tạo đơn phạt với lý do sách bị mất vì quá hạn trả", "Hệ thống");
                     }

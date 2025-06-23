@@ -67,7 +67,7 @@ public class FineRecordService {
             return fineRecordRepository.save(fineRecord);
         } else{
             switch (fineRecord.getFineReason()) {
-                case LOST, LOST_OVEVERDUE -> {
+                case LOST, LOST_OVERDUE -> {
                     fineRecord.setFineAmount(fineRecord.getBook().getPrice() * 2);
                     copyService.updateStatusCopy(fineRecord.getBook(), CopyStatus.BORROWED, CopyStatus.LOST);
                 }
@@ -91,7 +91,7 @@ public class FineRecordService {
             }
             if (fineRecord.getStatus().equals(FineRecordStatus.PENDING)) {
                 fineRecord.setFineDate(Date.valueOf(LocalDate.now()));
-                fineRecord.setDueDate(fineRecord.getFineReason().equals(Reason.LOST_OVEVERDUE)
+                fineRecord.setDueDate(fineRecord.getFineReason().equals(Reason.LOST_OVERDUE)
                         ?  Date.valueOf(LocalDate.now())
                         :  Date.valueOf(LocalDate.now().plusDays(7)));
             }
