@@ -22,8 +22,7 @@
         "foregroundImage": "./app/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.manhha5842.LibraryApplication",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.manhha5842.LibraryApplication"
     },
     "web": {
       "favicon": "./app/assets/favicon.png"

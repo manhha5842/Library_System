@@ -4,13 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../constants/navigationTypes';
 
-type BackButtonProps = {
-    title?: string;
-};
 
 type NavigationHookProp = StackNavigationProp<RootStackParamList>;
 
-export default function BackButton({ title }: BackButtonProps) {
+export default function BackButton() {
     const navigation = useNavigation<NavigationHookProp>();
 
     return (

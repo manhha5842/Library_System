@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { RefreshControl } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Box, Text, HStack, VStack, ScrollView, Center, Divider, Spinner, Skeleton, Flex, Button, Heading, Badge, ZStack } from "native-base";
-import axios from 'axios';
-import apiConfig from '../config/apiConfig';
 import { useUser } from '../context/UserContext';
 import { RootStackParamList } from '../constants';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -207,7 +205,6 @@ export default function BorrowRecordDetailPage() {
                 setSuccessAlertOpen(true);
             }
         } catch (error) {
-            console.log('Error cancelling borrow record, using mock update.', error);
             // Simulate cancellation on error
             const updatedMockRecord = { ...borrowRecordDetail, status: 'CANCELLED' as const };
             setBorrowRecordDetail(updatedMockRecord);

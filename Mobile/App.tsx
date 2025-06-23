@@ -12,12 +12,13 @@ import * as Screen from "./app/views"
 import BackButton from "./app/components/BackButton";
 import CartButton from "./app/components/CartButton";
 import { CartProvider } from "./app/context/CartContext";
+import { StackNavigationOptions } from '@react-navigation/stack';
 
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-const defaultHeaderOptions: any = {
+const defaultHeaderOptions: StackNavigationOptions = {
   headerShown: true,
   headerTransparent: false,
   headerTitle: '',
