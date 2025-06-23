@@ -38,7 +38,6 @@ export default function SearchPage() {
                         await fetcher();
                     }
                 } catch (error) {
-                    console.log(`Error fetching ${title}, using mock data`, error);
                     setLocalBooks(mockBooks);
                 } finally {
                     setIsLoading(false);
@@ -84,18 +83,18 @@ export default function SearchPage() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <Pressable onPress={() => navigation.navigate('BookDetail', { bookId: item.id })}>
-                    {({ isPressed }) => {
+                        {({ isPressed }) => {
                             return <HStack shadow={5} height={'20'} bg={"white"} borderRadius={15} mb={3} >
                                 <Image source={{ uri: item.image }}
-                                w={'20%'} resizeMode="cover" borderRadius={15} alt='Banner Image' />
-                            <VStack p={2} justifyContent={"space-between"} flexShrink={1}>
+                                    w={'20%'} resizeMode="cover" borderRadius={15} alt='Banner Image' />
+                                <VStack p={2} justifyContent={"space-between"} flexShrink={1}>
                                     <Text fontWeight={500} fontSize={"sm"} numberOfLines={2} isTruncated >{item.title}</Text>
                                     <Text color={"gray.400"} fontSize={"2xs"}>{item.author.map(author => author.name).join(', ')}</Text>
-                            </VStack>
-                            <Box position={'absolute'} h={20} w={'100%'} borderRadius={15} bg={'black'} opacity={isPressed ? "0.1" : 0} />
-                        </HStack>
-                    }}
-                </Pressable>
+                                </VStack>
+                                <Box position={'absolute'} h={20} w={'100%'} borderRadius={15} bg={'black'} opacity={isPressed ? "0.1" : 0} />
+                            </HStack>
+                        }}
+                    </Pressable>
                 )}
             />
         </VStack >

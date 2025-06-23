@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FlatList, RefreshControl } from 'react-native';
-import { Box, Text, Spinner } from 'native-base';
+import { Box, Text, Spinner, Center, Heading, Divider } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import BackButton from '../components/BackButton';
 import NotificationCard from '../components/notification/NotificationCard';
@@ -56,14 +56,13 @@ export default function NotificationPage() {
             }
         } catch (error) {
             console.error("Failed to mark notification as read:", error);
-             // Revert on error
-             setNotifications(prev =>
+            // Revert on error
+            setNotifications(prev =>
                 prev.map(n =>
                     n.id === notification.id ? { ...n, isRead: false } : n
                 )
             );
         }
-        console.log("Notification pressed:", notification.id);
     };
 
     const renderEmptyComponent = () => (
@@ -75,15 +74,19 @@ export default function NotificationPage() {
     if (isLoading) {
         return (
             <Box flex={1} bg="white">
-                <BackButton title="Thông báo" />
                 <Spinner flex={1} color="gray.500" />
             </Box>
         )
     }
 
     return (
-        <Box flex={1} bg="white">
-            <BackButton title="Thông báo" />
+        <Box flex={1} bg="white" safeArea>
+            <Center mt={10}>
+                <Heading>
+                    THÔNG BÁO
+                </Heading>
+                <Divider bg="indigo.500" thickness="2" my={2} w={40} orientation="horizontal" />
+            </Center>
             <FlatList
                 data={notifications}
                 renderItem={({ item }) => (

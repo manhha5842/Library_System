@@ -53,7 +53,6 @@ export default function HistoryBorrowRecord() {
 
         return (
         <Box flex={1} bg={'white'}>
-            <BackButton title='Lịch sử mượn trả' />
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}

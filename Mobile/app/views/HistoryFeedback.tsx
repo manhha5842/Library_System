@@ -47,7 +47,6 @@ export default function HistoryFeedback() {
 
         return (
         <Box flex={1} bg={'white'}>
-            <BackButton title='Lịch sử góp ý' />
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}

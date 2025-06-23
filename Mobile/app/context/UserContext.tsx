@@ -32,8 +32,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
                 const userString = await AsyncStorage.getItem('user');
                 if (userString) {
                     const userData: User = JSON.parse(userString);
-                    // Ở đây có thể thêm bước gọi API để xác thực token
-                    // nhưng để đơn giản, ta tin tưởng token đã lưu
+                    // Thêm bước gọi API để xác thực token 
                     setUser(userData);
                     setIsLoggedIn(true);
                     axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
@@ -54,6 +53,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             setIsLoggedIn(true);
             axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
             await AsyncStorage.setItem('user', JSON.stringify(userData));
+
         } catch (e) {
             console.error("Failed to save user to storage", e);
         }

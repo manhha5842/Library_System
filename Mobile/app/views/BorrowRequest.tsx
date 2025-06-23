@@ -88,9 +88,7 @@ export default function BorrowRequest() {
 
     const submitBorrowRecord = async () => {
         try {
-            console.log(borrowRecordDTO);
             await setIsPending(true);
-            console.log(isPending);
             console.log("đang gửi yêu cầu");
             const response = await api.post(`/request/createBorrowRecord`, borrowRecordDTO, {
                 headers: {

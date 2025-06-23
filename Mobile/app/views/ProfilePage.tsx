@@ -17,18 +17,19 @@ const ProfilePage: React.FC = () => {
 
     const displayUser = user || mockUser;
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        await logout();
+        navigation.navigate('Intro' as never);
     };
 
     return (
-        <ScrollView>
-            <VStack space={4} alignItems="center" py={8}>
-                <Image 
-                    source={require('../assets/avatar.png')} 
-                    alt="Avatar" 
-                    size="xl" 
-                    borderRadius="full" 
+        <ScrollView >
+            <VStack space={4} safeArea alignItems="center" py={8}>
+                <Image
+                    source={require('../assets/avatar.png')}
+                    alt="Avatar"
+                    size="xl"
+                    borderRadius="full"
                 />
                 <VStack space={1} alignItems="center">
                     <Text fontSize="2xl" fontWeight="bold">

@@ -12,6 +12,7 @@ import CustomAlertDialog from '../components/AlertDialog';
 import { mockBorrowRecordDetails } from '../types/mockData';
 import InfoRow from '../components/detail/InfoRow';
 import api from '../config/apiConfig';
+import { formatDate } from '../utils/dateUtils'
 
 type BorrowRecordDetailNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -137,7 +138,7 @@ const ActionButtons: React.FC<{ status: string; onRenew: () => void; onCancel: (
 
     return (
         <HStack justifyContent={'center'} position={'absolute'} bottom={0} height={16} w='100%'>
-            { (status === "BORROWED" || status === "RETURN_PENDING") &&
+            {(status === "BORROWED" || status === "RETURN_PENDING") &&
                 <Button flex={1} borderRadius={0} colorScheme={'info'} onPress={onRenew}>
                     Gia hạn thời gian
                 </Button>
@@ -160,7 +161,7 @@ export default function BorrowRecordDetailPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [isPending, setIsPending] = useState(false);
-    
+
     const [isCancelAlertOpen, setCancelAlertOpen] = useState(false);
     const [isErrorAlertOpen, setErrorAlertOpen] = useState(false);
     const [isSuccessAlertOpen, setSuccessAlertOpen] = useState(false);
@@ -182,7 +183,7 @@ export default function BorrowRecordDetailPage() {
             }
         }
     }, [borrowRecordId]);
-    
+
     useEffect(() => {
         setIsLoading(true);
         fetchDetails().finally(() => setIsLoading(false));
@@ -224,7 +225,7 @@ export default function BorrowRecordDetailPage() {
     if (!borrowRecordDetail) {
         return <Center flex={1}><Text>Không có dữ liệu để hiển thị.</Text></Center>;
     }
-    
+
     return (
         <Box flex={1}>
             <CustomAlertDialog
@@ -261,7 +262,7 @@ export default function BorrowRecordDetailPage() {
                 </VStack>
             </ScrollView>
 
-            <ActionButtons 
+            <ActionButtons
                 status={borrowRecordDetail.status}
                 onRenew={() => navigation.navigate('RenewalRequestPage', { borrowRecordId: borrowRecordId })}
                 onCancel={() => setCancelAlertOpen(true)}
@@ -303,20 +304,5 @@ const getRenewalRecordStatus = (status: string) => {
         case 'APPROVED': return { label: 'Đã xác nhận', color: 'green.500' };
         case 'REJECTED': return { label: 'Bị từ chối', color: 'red.500' };
         default: return { label: 'Không xác định', color: 'gray.500' };
-    }
-};
-
-const formatDate = (dateString: string | null): string => {
-    if (!dateString) return 'N/A';
-    try {
-        const datePart = dateString.split("T")[0];
-        const date = new Date(datePart);
-        if (isNaN(date.getTime())) { return datePart; }
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    } catch (e) {
-        return dateString;
     }
 };

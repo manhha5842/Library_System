@@ -65,7 +65,7 @@ export const mockBooks: Book[] = [
     author: [mockAuthors[0]],
     category: [mockCategories[0]],
     image: 'https://picsum.photos/seed/book1/200/300',
-    status: 'available',
+    status: 'ACTIVE',
   },
   {
     id: '2',
@@ -73,7 +73,7 @@ export const mockBooks: Book[] = [
     author: [mockAuthors[1]],
     category: [mockCategories[1]],
     image: 'https://picsum.photos/seed/book2/200/300',
-    status: 'borrowed',
+    status: 'INACTIVE',
   },
   {
     id: '3',
@@ -81,7 +81,7 @@ export const mockBooks: Book[] = [
     author: [mockAuthors[2]],
     category: [mockCategories[2]],
     image: 'https://picsum.photos/seed/book3/200/300',
-    status: 'available',
+    status: 'ACTIVE',
   },
   {
     id: '4',
@@ -89,7 +89,7 @@ export const mockBooks: Book[] = [
     author: [mockAuthors[3]],
     category: [mockCategories[3], mockCategories[5]],
     image: 'https://picsum.photos/seed/book4/200/300',
-    status: 'reserved',
+    status: 'INACTIVE',
   },
   {
     id: '5',
@@ -97,7 +97,7 @@ export const mockBooks: Book[] = [
     author: [mockAuthors[4]],
     category: [mockCategories[1], mockCategories[4]],
     image: 'https://picsum.photos/seed/book5/200/300',
-    status: 'available',
+    status: 'ACTIVE',
   },
 ];
 

@@ -46,11 +46,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
         setCarts(prevCarts => {
             const bookInCarts = prevCarts.some(book => book.id == newBook.id);
-            console.log(prevCarts);
-            console.log(newBook);
             const bookInUnavailable = unavailableBooks.some(book => book.id == newBook.id);
-            console.log(bookInCarts);
-            console.log(bookInUnavailable);
             if (bookInCarts || bookInUnavailable) {
                 console.info('Book already exists in carts');
             } else if (newBook.status === 'ACTIVE' || newBook.status === 'OFFLINE_ONLY') {

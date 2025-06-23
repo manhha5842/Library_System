@@ -37,6 +37,7 @@ export default function CartPage() {
         const selectDateString = selectDate ? selectDate.toISOString() : null;
         const dueDateString = dueDate ? dueDate.toISOString() : null;
         const selectedBookIds = Array.from(selectedBooks);
+
         navigation.navigate('BorrowRequest', { selectedBookIds, selectDate: selectDateString, dueDate: dueDateString });
     };
 
@@ -49,6 +50,12 @@ export default function CartPage() {
             setRefreshing(false);
         }
     }, []);
+    const handleSelectDate = (date: Date) => {
+        setSelectDate(date);
+        const due = new Date(date);
+        due.setDate(due.getDate() + 14);
+        setDueDate(due);
+    };
     const handleSelectBook = (bookId: string, isChecked: boolean) => {
         setSelectedBooks((prevSelectedBooks) => {
             const newSelectedBooks = new Set(prevSelectedBooks); // Tạo bản sao của Set hiện tại
@@ -57,7 +64,6 @@ export default function CartPage() {
             } else {
                 newSelectedBooks.delete(bookId); // Xóa sách đã bỏ chọn
             }
-            console.log(newSelectedBooks);
             return newSelectedBooks;
         });
     };
@@ -208,8 +214,11 @@ export default function CartPage() {
                             source={require('../assets/banner-basket.png')}
                             resizeMode="cover" borderRadius={16} h={"32"} alt='Banner Image' width={'100%'} />
                     </Box>
-                    <Text color={'coolGray.600'}>Chọn ngày nhận sách dự kiến</Text>
-                    <MyDateTimePicker selectDate={selectDate} setSelectDate={setSelectDate} />
+                    <Text pb={5} color={'coolGray.600'}>Chọn ngày nhận sách dự kiến</Text>
+                    <MyDateTimePicker selectDate={selectDate}  setSelectDate={handleSelectDate}  />
+                    <Text pt={5}>
+                        {dueDate ? `Trả trước ngày ${dueDate.getDate()}/${dueDate.getMonth() + 1}/${dueDate.getFullYear()}` : 'Vui lòng chọn ngày nhận sách'}
+                    </Text>
                     <RenderBook />
                 </VStack>
             </ScrollView >

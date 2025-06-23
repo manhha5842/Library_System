@@ -45,7 +45,6 @@ export default function HistoryFineRecord() {
 
         return (
         <Box flex={1} bg={'white'}>
-            <BackButton title='Lịch sử phiếu phạt' />
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
